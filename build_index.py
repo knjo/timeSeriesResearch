@@ -14,8 +14,6 @@ from pathlib import Path
 
 # --------------- paths ---------------
 PROJECT_ROOT = Path(__file__).resolve().parents[3]   # HFTResearch/
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.append(str(PROJECT_ROOT))
 
 TICK_FEATURE_DIR = PROJECT_ROOT / "data" / "tickFeature"
 OUTPUT_DIR       = PROJECT_ROOT / "src" / "research" / "negFill"
