@@ -108,6 +108,11 @@ def _merge_one_day(date: str, keys: pl.DataFrame) -> pl.DataFrame | None:
             # Rename tickBar TransTime to avoid collision
             tick_bar = tick_bar.rename({"TransTime": "TransTime_tb"})
 
+            # 加 1μs 偏移 → join_asof backward 變成 strict < (不含等於)
+            tick_bar = tick_bar.with_columns(
+                (pl.col("TransTime_tb") + pl.duration(microseconds=1)).alias("TransTime_tb")
+            )
+
             merged = merged.join_asof(
                 tick_bar,
                 left_on="TransTime",
