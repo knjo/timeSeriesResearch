@@ -32,7 +32,7 @@ def filter_one_day(path: Path) -> pl.DataFrame | None:
 
     # 確認需要的欄位存在
     schema_cols = lf.collect_schema().names()
-    for col in ["QuoteCode", "ChannelSeq", "Spread", "FillLots_atLow"]:
+    for col in ["QuoteCode", "ChannelSeq", "Spread", "FillLots_atLow","SpreadPairBid"]:
         if col not in schema_cols:
             print(f"  [SKIP] {date_str}: missing column '{col}'")
             return None
