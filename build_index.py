@@ -41,8 +41,8 @@ def filter_one_day(path: Path) -> pl.DataFrame | None:
     lf = lf.with_columns(
         pl.col("Spread").diff().over("QuoteCode").alias("_spread_diff")
     )
-    # Spread diff per QuoteCode
-    lf = lf.filter((pl.col("_spread_diff") != 0) &(pl.col("BidPreMove") != 0) & (pl.col("FillLots_atLow") < 0))
+    # Spread diff per QuoteCode, 不用 == 0 避免浮點數易位
+    lf = lf.filter((pl.col("_spread_diff").abs() > 0.001) & (pl.col("BidPreMove").abs() > 0.001) & (pl.col("FillLots_atLow") < 0))
 
     # 只保留 unikey
     lf = lf.select([
