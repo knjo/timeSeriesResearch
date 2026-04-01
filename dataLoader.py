@@ -95,7 +95,7 @@ def _merge_one_day(date: str, keys: pl.DataFrame) -> pl.DataFrame | None:
         tick_bar = pl.read_parquet(tb_path)
 
         # 只保留 QuoteCode + TransTime + Rank 欄位
-        rank_cols = [c for c in tick_bar.columns if c.endswith("Rank")] + [c for c in tick_bar.columns if c.endswith("Count")]
+        rank_cols = [c for c in tick_bar.columns if c.endswith("Rank")] + [c for c in tick_bar.columns if c.endswith("Count")] + ['AmountRank_canDayTrade']
         tb_select = ["QuoteCode", "TransTime", "TimeSlot"] + rank_cols
         tb_select = [c for c in tb_select if c in tick_bar.columns]
         tick_bar = tick_bar.select(tb_select)
