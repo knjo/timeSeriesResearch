@@ -42,7 +42,8 @@ sys.path.insert(0, SCRIPT_DIR)
 from rolling_model import train_and_predict_ridge_rolling
 
 # ── constants ────────────────────────────────────────────────────────────────
-REPORT_DIR = os.path.join(SCRIPT_DIR, "report")
+TEST_PREFIX = "based_line_strickFeat"  # 修改成你想要的測試名稱
+REPORT_DIR = os.path.join(SCRIPT_DIR, "report", TEST_PREFIX)
 DATA_DIR   = os.path.join(SCRIPT_DIR, "data")
 os.makedirs(REPORT_DIR, exist_ok=True)
 
@@ -97,7 +98,7 @@ def _load_and_prepare_signal_df() -> pd.DataFrame:
     ])
 
     # Notebook skips the first file: `for f in tqdm(file_names[1:]):`
-    files = files[1:]
+    files = files[-300:]
     print(f"   Found {len(files)} parquet files to process")
 
     data = []
@@ -146,7 +147,7 @@ def _load_and_prepare_signal_df() -> pd.DataFrame:
     # TakerSell_CloseBP_net (per Date+QuoteCode de-mean)
     signal_df['TakerSell_CloseBP_net'] = (
         signal_df['TakerSell_CloseBP']
-        - signal_df.groupby(['Date', 'QuoteCode'])['TakerSell_CloseBP'].transform('mean')
+        - signal_df.groupby(['Date','QuoteCode'])['TakerSell_CloseBP'].transform('mean')
     )
 
     # isAbnormalDate flag
@@ -172,7 +173,7 @@ def _apply_risk_filter(signal_df: pd.DataFrame) -> pd.DataFrame:
     # Step 1: 先做 signal condition（大幅縮小資料量）
     condition = (
         (signal_df['TakerSell_CloseBP_net_pred'] * (signal_df['isAbnormalDate'] == 0) > 40)
-        | (signal_df['TakerSell_CloseBP_net_ABpred'] * (signal_df['isAbnormalDate'] == 1) > 60)
+        | (signal_df['TakerSell_CloseBP_net_ABpred'] * (signal_df['isAbnormalDate'] == 1) > 40)
     )
     df = signal_df.loc[condition].reset_index(drop=True)
 

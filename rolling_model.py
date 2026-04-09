@@ -165,7 +165,7 @@ def _screen_features_for_one_day(i, unique_dates, date_bounds, X_arr, Y_arr, quo
                 continue
 
             ic_drop = abs(ic_oos) / abs(ic_is)
-            if ( abs(ic_drop - 1 ) < 0.5) and (spread_is * np.sign(ic_is) > 20):
+            if ( abs(ic_drop - 1 ) < 0.3) and (spread_is * np.sign(ic_is) > 40):
                 selected_features_idx.append(f_idx)
 
     if len(selected_features_idx) > 0:
@@ -302,6 +302,7 @@ def train_and_predict_ridge_rolling(signal_df: pd.DataFrame, X_list: list, Y_col
             daily_median = df.groupby('Date')[c].median()
             shifted_daily_median = daily_median.shift(1)
             df[c] = df[c].fillna(df['Date'].map(shifted_daily_median))
+            del daily_median, shifted_daily_median
 
     cols_to_drop_rows = []
     cols_to_remove_from_X = []
@@ -374,6 +375,9 @@ def train_and_predict_ridge_rolling(signal_df: pd.DataFrame, X_list: list, Y_col
 
     normal_mask = (lot_mask & (df['isAbnormalDate'] == 0)).to_numpy()
     ab_mask = (lot_mask & (df['isAbnormalDate'] == 1)).to_numpy()
+    
+    # 釋放 lot_mask 節省記憶體
+    del lot_mask
 
     # ==========================================
     # 🌟 強制記憶體連續與使用純數值型態 (float32)
@@ -392,6 +396,8 @@ def train_and_predict_ridge_rolling(signal_df: pd.DataFrame, X_list: list, Y_col
     dates_s = df['Date'].dt.date
     dates_arr = dates_s.to_numpy()
     unique_dates = np.unique(dates_arr)
+    
+    del dates_s
 
     date_bounds = {}
     for d in unique_dates:
@@ -427,6 +433,7 @@ def train_and_predict_ridge_rolling(signal_df: pd.DataFrame, X_list: list, Y_col
                 screened_count += 1
 
         print(f"✅ Phase 1 完成！共 {screened_count}/{len(unique_dates)} 天有篩選出特徵。")
+        del screening_results
 
     print(f"▶️ Phase 2: 開始對 {len(unique_dates)} 個交易日進行 純Numpy極速 平行 Rolling Update (Core 數: {n_jobs})...")
 
@@ -470,6 +477,12 @@ def train_and_predict_ridge_rolling(signal_df: pd.DataFrame, X_list: list, Y_col
     del pred_normal_full, pred_ab_full, results
     if precomputed_features is not None:
         del precomputed_features
+        
+    # 確保釋放額外的本地變數
+    if 'date_bounds' in locals():
+        del date_bounds
+    if 'unique_dates' in locals():
+        del unique_dates
     gc.collect()
 
     return {
