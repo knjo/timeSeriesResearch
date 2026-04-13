@@ -38,17 +38,20 @@ from tqdm import tqdm
 
 # ── project imports ──────────────────────────────────────────────────────────
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, SCRIPT_DIR)
-from rolling_model import train_and_predict_ridge_rolling
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(SCRIPT_DIR)))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
+from src.research.rolling_model import train_and_predict_ridge_rolling
 
 # ── constants ────────────────────────────────────────────────────────────────
-TEST_PREFIX = "based_line_strickFeat"  # 修改成你想要的測試名稱
+TEST_PREFIX = "based_line_strick"  # 修改成你想要的測試名稱
 REPORT_DIR = os.path.join(SCRIPT_DIR, "report", TEST_PREFIX)
 DATA_DIR   = os.path.join(SCRIPT_DIR, "data")
 os.makedirs(REPORT_DIR, exist_ok=True)
 
-N_TRAINING_DAYS_LIST = [ 40, 50, 60, 75, 90]
-ALPHA_LIST           = [ 1, 10, 30 ,100]
+N_TRAINING_DAYS_LIST = [ 5, 10, 20, 30, 40, 50, 60, 90, 120]
+ALPHA_LIST           = [ 0.1, 1, 10, 30 ,100]
 
 # columns exactly as defined in the research notebook
 BASED_COLUMNS   = ['QuoteCode', 'ChannelSeq', 'InOut', 'Overshoot', 'TotalFillLots',
@@ -56,9 +59,7 @@ BASED_COLUMNS   = ['QuoteCode', 'ChannelSeq', 'InOut', 'Overshoot', 'TotalFillLo
                    'AskLots5', 'FillLots']
 FEATURE_COLUMNS = ['ToLow', 'ToHigh', 'Low_High', 'TickSize', 'TickBP', 'ToRef',
                    'ToOpen', 'FillLots_atLow', 'FillLots_atHigh', 'B1_A1B1',
-                   'B1_B1B5', 'B12_B1B5', 'A1_A1A5', 'A12_A1A5', 'Spread',
-                   'SpreadPairID', 'SpreadPairSeq', 'SpreadPairElapsed',
-                   'SpreadNarrowSide', 'SpreadPairCumLots', 'PrevSpreadPairLots',
+                   'B1_B1B5', 'B12_B1B5', 'A1_A1A5', 'A12_A1A5', 
                    'RemainSeconds', 'B1_Last', 'Total_Last']
 CROSS_COLUMNS   = ['AmountRank', 'netAmountRank', 'TotalFillLotsRank',
                    'netTotalFillLotsRank', 'ToRefRank']
