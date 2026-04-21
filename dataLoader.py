@@ -148,18 +148,32 @@ def build_merged_data(forcefetch: bool = False):
     idx = _read_index()
     all_dates = idx["Date"].unique().sort().to_list()
 
+    existing_files = sorted([f.stem for f in OUTPUT_DIR.glob("*.parquet")])
+    last_existing_date = existing_files[-1] if existing_files else None
+
     print(f"Total dates in index: {len(all_dates)}")
     print(f"Output directory: {OUTPUT_DIR}")
+    if last_existing_date:
+        print(f"Last existing date to refresh: {last_existing_date}")
 
     saved = 0
     skipped = 0
+    refreshed = 0
 
     for i, date in enumerate(all_dates):
         output_path = OUTPUT_DIR / f"{date}.parquet"
 
         if output_path.exists() and not forcefetch:
-            skipped += 1
-            continue
+            if date != last_existing_date:
+                skipped += 1
+                continue
+            else:
+                try:
+                    orig_rows = pl.read_parquet(output_path, columns=["QuoteCode"]).shape[0]
+                except Exception:
+                    orig_rows = "?"
+                print(f"  [INFO] {date} is the last existing date (orig_rows: {orig_rows}), refreshing it.")
+                refreshed += 1
 
         day_idx = idx.filter(pl.col("Date") == date)
         keys = day_idx.select(UNIKEY_COLS)
@@ -177,7 +191,7 @@ def build_merged_data(forcefetch: bool = False):
             import traceback
             traceback.print_exc()
 
-    print(f"\nDone. Saved: {saved}, Skipped: {skipped}")
+    print(f"\nDone. Saved: {saved} (Refreshed: {refreshed}), Skipped: {skipped}")
 
 
 # ================================================================
