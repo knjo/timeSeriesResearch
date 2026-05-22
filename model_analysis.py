@@ -254,6 +254,130 @@ def plot_relative_importance_heatmap(result, model_type='normal', top_n=20, figs
     plt.tight_layout()
     plt.show()
 
+def plot_pls_component_weights(result, comp=1, figsize=(14, 6)):
+    """
+    視覺化 PLS 降維時，各個 Day Feature 對 Component 的貢獻度 (Weights) 變化。
+    comp: 1 代表 Component 1 (最大變異且最相關), 2 代表 Component 2
+    """
+    if 'pls_log' not in result or not result['pls_log']:
+        print("無 PLS 權重記錄 (可能沒有輸入 Day Features 或全部被 Screening 剔除)")
+        return
+
+    comp_idx = comp - 1
+    rows = {}
+    for date_str, info in result['pls_log'].items():
+        feats = info['features']
+        weights = np.array(info['weights'])
+        
+        # 確保該天有算出這個 Component (有時特徵太少只會出 1 個 Comp)
+        if weights.shape[1] > comp_idx:
+            day_w = weights[:, comp_idx]
+            rows[date_str] = dict(zip(feats, day_w))
+
+    if not rows:
+        print(f"無 Component {comp} 的數據")
+        return
+
+    df_w = pd.DataFrame.from_dict(rows, orient='index')
+    df_w.index = pd.to_datetime(df_w.index)
+    df_w = df_w.sort_index()
+
+    fig, ax = plt.subplots(figsize=figsize)
+
+    # 為了避免高頻雜訊，使用 10 天 MA 平滑線條
+    smooth_w = df_w.rolling(10, min_periods=1).mean()
+
+    # 使用較為鮮明的顏色庫
+    cmap = plt.get_cmap('tab20')
+    colors = [cmap(i) for i in np.linspace(0, 1, len(smooth_w.columns))]
+
+    for i, col in enumerate(smooth_w.columns):
+        ax.plot(smooth_w.index, smooth_w[col], label=col, linewidth=2, alpha=0.85, color=colors[i])
+
+    ax.axhline(0, color='black', linestyle='--', linewidth=1.5)
+    ax.set_title(f'How PLS Consumes Day Features — Component {comp} Weights (10-day MA)')
+    ax.set_xlabel('Date')
+    ax.set_ylabel('PLS Weight (Contribution)')
+    
+    # 將圖例放到圖表外部右側
+    ax.legend(loc='upper left', bbox_to_anchor=(1.02, 1), fontsize=9, borderaxespad=0.)
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.show()
+
+import matplotlib.colors as mcolors
+
+def plot_pls_weights_heatmap(result, comp=1, top_n=20, figsize=(16, 10)):
+    """
+    使用熱力圖視覺化 PLS Component 的權重變化。
+    解決特徵過多時，折線圖變成「義大利麵」無法解讀的問題。
+    
+    參數:
+    comp: 欲觀察的主成分 (1 或 2)
+    top_n: 最多顯示平均影響力最大的前 N 個特徵
+    """
+    if 'pls_log' not in result or not result['pls_log']:
+        print("無 PLS 權重記錄")
+        return
+
+    comp_idx = comp - 1
+    rows = {}
+    for date_str, info in result['pls_log'].items():
+        feats = info['features']
+        weights = np.array(info['weights'])
+        if weights.shape[1] > comp_idx:
+            day_w = weights[:, comp_idx]
+            rows[date_str] = dict(zip(feats, day_w))
+
+    if not rows:
+        return
+
+    # 1. 建立 DataFrame 並排序時間
+    df_w = pd.DataFrame.from_dict(rows, orient='index')
+    df_w.index = pd.to_datetime(df_w.index)
+    df_w = df_w.sort_index()
+
+    # 2. 為了減少高頻雜訊，使用 5 天 MA 平滑
+    smooth_w = df_w.rolling(5, min_periods=1).mean()
+
+    # 3. 挑選並排序最重要的特徵 (依照全期平均絕對權重)
+    mean_abs_weight = smooth_w.abs().mean().sort_values(ascending=False)
+    top_feats = mean_abs_weight.index[:top_n].tolist()
+    
+    # 取出前 N 大特徵，並轉置 (T) 讓特徵變成 Y 軸，日期變成 X 軸
+    plot_data = smooth_w[top_feats].T
+
+    # 4. 繪圖設定
+    fig, ax = plt.subplots(figsize=figsize)
+    
+    # 設定發散型色階 (以 0 為中心，紅正藍負)
+    vmax = plot_data.abs().max().max()
+    norm = mcolors.TwoSlopeNorm(vmin=-vmax, vcenter=0, vmax=vmax)
+    cmap = plt.get_cmap('RdBu_r') # 紅(正) - 白(0) - 藍(負)
+
+    im = ax.imshow(plot_data.values, aspect='auto', cmap=cmap, norm=norm, interpolation='nearest')
+    
+    # 加入 Colorbar
+    cbar = plt.colorbar(im, ax=ax, shrink=0.8, pad=0.02)
+    cbar.set_label('PLS Weight (Red: Positive, Blue: Negative)')
+
+    # X 軸：日期 (每隔幾天標示一次避免太擠)
+    n_dates = len(plot_data.columns)
+    step = max(1, n_dates // 15)
+    ax.set_xticks(range(0, n_dates, step))
+    ax.set_xticklabels([plot_data.columns[i].strftime('%Y-%m-%d') for i in range(0, n_dates, step)],
+                       rotation=45, ha='right', fontsize=9)
+
+    # Y 軸：特徵名稱
+    ax.set_yticks(range(len(top_feats)))
+    ax.set_yticklabels(top_feats, fontsize=10)
+
+    ax.set_title(f'PLS Component {comp} Regime Shift Heatmap (Top {top_n} Features)', fontsize=14, pad=15)
+    ax.set_xlabel('Date', fontsize=11)
+    ax.set_ylabel('Day Features (Sorted by Importance)', fontsize=11)
+    
+    plt.tight_layout()
+    plt.show()
 
 def plot_model_dashboard(result, model_type='normal'):
     """
@@ -291,3 +415,12 @@ def plot_model_dashboard(result, model_type='normal'):
 
     print(f"\n📊 {'[4/4]' if not all_full else '[2/2]'} Coefficient Stability")
     plot_coefficient_stability(result, model_type=model_type)
+
+    if 'pls_log' in result and result['pls_log']:
+        print("\n📊 [5] PLS Component 1 Feature Weights")
+        plot_pls_weights_heatmap(result, comp=1)
+        
+        # 如果你想看第二主成分，取消下面註解即可
+        print("\n📊 [6] PLS Component 2 Feature Weights")
+        plot_pls_weights_heatmap(result, comp=2)
+

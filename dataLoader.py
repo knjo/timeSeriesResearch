@@ -27,11 +27,94 @@ TICK_DATA_DIR      = DATA_DIR / "tickData"
 TICK_FEATURE_DIR   = DATA_DIR / "tickFeature"
 PRE_MARKET_DIR     = DATA_DIR / "preMarket"
 TICK_BAR_DIR       = DATA_DIR / "tickBar"
+TXF_TICK_DIR       = DATA_DIR / "txfTickData"
 
 INDEX_PATH  = PROJECT_ROOT / "src" / "research" / "negFill" / "data_index.parquet"
 OUTPUT_DIR  = PROJECT_ROOT / "src" / "research" / "negFill" / "data"
 
 UNIKEY_COLS = ["QuoteCode", "ChannelSeq"]
+
+
+# ================================================================
+#  TXF helpers
+# ================================================================
+
+def _load_txf_for_asof(date: str) -> pl.DataFrame | None:
+    """
+    讀取單日 TXF tick data，自動選取最大成交量的 TXF 合約，
+    回傳只含 TransTime + txf_AskPrice2 + txf_BidPrice2 的 DataFrame
+    （已過濾掉 AskPrice2==0 或 BidPrice2==0 的列，並按 TransTime 排序）。
+    """
+    txf_path = TXF_TICK_DIR / f"{date}_TxfTick.parquet"
+    if not txf_path.exists():
+        return None
+
+    txf = pl.read_parquet(txf_path)
+
+    # 只保留 TXF 大台合約 (QuoteCode starts with 'TXF')
+    txf = txf.filter(pl.col("QuoteCode").str.starts_with("TXF"))
+    if txf.is_empty():
+        return None
+
+    # 自動選最大成交量的合約 (近月)
+    most_liquid = (
+        txf.filter(pl.col("FillPrice") > 0)
+           .group_by("QuoteCode")
+           .agg(pl.len().alias("fill_count"))
+           .sort("fill_count", descending=True)
+           .head(1)
+    )
+    if most_liquid.is_empty():
+        return None
+    main_contract = most_liquid["QuoteCode"][0]
+    txf = txf.filter(pl.col("QuoteCode") == main_contract)
+
+    # 過濾掉 AskPrice2==0 或 BidPrice2==0（L1 無五檔報價的封包）
+    txf = txf.filter((pl.col("AskPrice2") > 0) & (pl.col("BidPrice2") > 0))
+    if txf.is_empty():
+        return None
+
+    txf = (
+        txf.select(["TransTime", "AskPrice2", "BidPrice2"])
+           .rename({"AskPrice2": "txf_AskPrice2", "BidPrice2": "txf_BidPrice2"})
+           .sort("TransTime")
+    )
+    return txf
+
+
+def _calc_txf_close_mean(date: str) -> float:
+    """
+    計算 12:45 ~ 13:00 TXF FillPrice 的平均值（排除 FillPrice==0）。
+    若無資料則回傳 0.0。
+    """
+    txf_path = TXF_TICK_DIR / f"{date}_TxfTick.parquet"
+    if not txf_path.exists():
+        return 0.0
+
+    txf = pl.read_parquet(txf_path)
+    txf = txf.filter(pl.col("QuoteCode").str.starts_with("TXF"))
+
+    # 自動選最大成交量的合約
+    most_liquid = (
+        txf.filter(pl.col("FillPrice") > 0)
+           .group_by("QuoteCode")
+           .agg(pl.len().alias("fill_count"))
+           .sort("fill_count", descending=True)
+           .head(1)
+    )
+    if most_liquid.is_empty():
+        return 0.0
+    main_contract = most_liquid["QuoteCode"][0]
+
+    noon = txf.filter(
+        (pl.col("QuoteCode") == main_contract)
+        & (pl.col("FillPrice") > 0)
+        & (pl.col("TransTime").dt.hour() == 12)
+        & (pl.col("TransTime").dt.minute() >= 45)
+    )
+    if noon.is_empty():
+        return 0.0
+    return noon["FillPrice"].mean()
 
 
 # ================================================================
@@ -124,6 +207,39 @@ def _merge_one_day(date: str, keys: pl.DataFrame) -> pl.DataFrame | None:
             print(f"  [WARN] {date}: TransTime column missing, skipping tickBar join")
     else:
         print(f"  [WARN] tickBar not found: {tb_path.name}, skipping")
+
+    # --- TXF (台指期) merge_asof: +0.1s forward join ---
+    txf_df = _load_txf_for_asof(date)
+    txf_close_mean = _calc_txf_close_mean(date)
+
+    if txf_df is not None and "TransTime" in merged.columns:
+        merged = merged.sort("TransTime")
+        # 加 0.1 秒偏移，找 TransTime + 0.1s 之後最靠近的下一筆 TXF tick
+        merged = merged.with_columns(
+            (pl.col("TransTime") + pl.duration(milliseconds=100)).alias("_txf_join_time")
+        )
+        merged = merged.join_asof(
+            txf_df,
+            left_on="_txf_join_time",
+            right_on="TransTime",
+            strategy="forward",
+        ).drop("_txf_join_time")
+        # 填充 null → 0 (無法 match 的列)
+        merged = merged.with_columns([
+            pl.col("txf_AskPrice2").fill_null(0),
+            pl.col("txf_BidPrice2").fill_null(0),
+        ])
+    else:
+        # 無 TXF 資料 → 壓 0
+        merged = merged.with_columns([
+            pl.lit(0).alias("txf_AskPrice2"),
+            pl.lit(0).alias("txf_BidPrice2"),
+        ])
+
+    # TXF 12:45~13:00 FillPrice mean (date-level)
+    merged = merged.with_columns(
+        pl.lit(txf_close_mean).alias("txf_CloseMean")
+    )
 
     # 加上 Date 欄位
     merged = merged.with_columns(pl.lit(date).alias("Date"))
