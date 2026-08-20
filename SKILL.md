@@ -59,17 +59,22 @@ data_index.parquet（訊號點 unikey，由 build_index.py 產生）
 ## 2. Label 構造（多空符號規則）
 
 ```python
-# 空方（跌=賺）：label = -r_stock ⇒ 內含市場成分 -β·txf ⇒「加回」對沖腿
-residual = (TakerSell_CloseBP + txf_beta_60d * txf_to_1330_bp) / (txf_residual_vol_to_1330 * 1e4)
-# 多方（漲=賺）：label = +r_stock ⇒ 內含 +β·txf ⇒「減掉」對沖腿
-residual = (TakerBuy_CloseBP  - txf_beta_60d * txf_to_1330_bp) / (txf_residual_vol_to_1330 * 1e4)
+# 空方（跌=賺）：taker sell 進場在 B1；FutureHigh > Ref*1.08 觸「停損」→ 出場含 2 tick 不利滑價
+exit_s = RefPrice*1.08 + TickSize*2 if FutureHigh > RefPrice*1.08 else Close
+TakerSell_CloseBP = (BidPrice1 - exit_s) / BidPrice1 * 1e4
+residual = (TakerSell_CloseBP + txf_beta_60d * txf_to_1330_bp) / (txf_residual_vol_to_1330 * 1e4)  # 「加回」對沖腿
+
+# 多方（漲=賺）：taker buy 進場在 A1；FutureHigh > Ref*1.09 觸「停利」→ 出場 1.09（利己方向，不加滑價）
+exit_l = RefPrice*1.09 if FutureHigh > RefPrice*1.09 else Close
+TakerBuy_CloseBP = (exit_l - AskPrice1) / AskPrice1 * 1e4
+residual = (TakerBuy_CloseBP - txf_beta_60d * txf_to_1330_bp) / (txf_residual_vol_to_1330 * 1e4)   # 「減掉」對沖腿
 
 net  = residual - groupby(['Date','QuoteCode']).transform('mean')  # 選時點 label
 netM = residual - groupby(['Date']).transform('mean')              # 選股 label
 ```
 
 - z 是「幾個標準差」。**z 不是零均值**，水位隨 regime 漂移（negFill 曾漂到 -0.25σ）⇒ 門檻必須是相對式，絕不能用固定絕對值。
-- 停損型 label（如 FutureHigh > Ref×1.08 改用停損價）與「持有到收盤」的對沖腿 horizon 不一致，是已知近似（停損事件的最適對沖 k≈0.12，非停損 k≈0.71，Epps 效應）。
+- **架構決策**：停損停利只改 label 的出場價；vol、β、txf return 全部維持原估計（13:30 horizon），不做停損條件下的重估——已知近似（停損事件最適對沖 k≈0.12，非停損 k≈0.71，Epps 效應），換取 hedge 腿嚴格 ex-ante 與實作單純。`condition_benchmark.py --side long|short` 已內建這兩套 label。
 - pred 換回 BP 是「乘」vol 不是除；只在過費用檢查時做，寫新欄位不要覆寫。
 
 ## 3. 特徵紀律

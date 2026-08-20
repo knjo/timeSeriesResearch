@@ -8,6 +8,13 @@ Condition 驗收儀表板：評估「事件條件」作為樣本過濾器的水�
 兩邊套同一組濾網（可當沖、day_amount_rank<=150、09:00:30-12:30、
 TrialMatch==0、ToRef in (-1.5%, 5%)、|label|<10000），差異即條件本身的切割力。
 
+label 規則（--side）：
+  short：taker sell 進場在 B1；FutureHigh > Ref*1.08 觸「停損」→ 出場 Ref*1.08 + TickSize*2（不利滑價）
+  long ：taker buy  進場在 A1；FutureHigh > Ref*1.09 觸「停利」→ 出場 Ref*1.09
+residual：空方 (raw + β·txf_bp)/vol、多方 (raw − β·txf_bp)/vol。
+架構決策：停損停利只改 label 出場價；vol、β、txf return 維持原估計（13:30 horizon），
+不做停損條件下的重估——已知近似（停損事件最適對沖 k≈0.12），換取 hedge 腿嚴格 ex-ante。
+
 指標（negFill 2025-02~2026-08 基準值見 SKILL.md §0.1）：
   A. 選擇率、樣本/日、cv
   B. 切割力 Δz（必須用 residual z 口徑；raw 口徑會把市場方向誤計成條件功勞）
@@ -43,20 +50,32 @@ def tick_size(p):
               .when(p < 500).then(0.5).when(p < 1000).then(1.0).otherwise(5.0))
 
 
-def enrich(df):
+def raw_label(side):
+    if side == 'short':
+        entry = pl.col('BidPrice1')
+        exit_ = (pl.when(pl.col('FutureHigh') > pl.col('RefPrice') * 1.08)
+                   .then(pl.col('RefPrice') * 1.08 + pl.col('TickSize') * 2)
+                   .otherwise(pl.col('Close')))
+        return (entry - exit_) / entry * 1e4
+    entry = pl.col('AskPrice1')
+    exit_ = (pl.when(pl.col('FutureHigh') > pl.col('RefPrice') * 1.09)
+               .then(pl.col('RefPrice') * 1.09)
+               .otherwise(pl.col('Close')))
+    return (exit_ - entry) / entry * 1e4
+
+
+def enrich(df, side):
+    sgn = 1.0 if side == 'short' else -1.0
     df = df.with_columns(
-        pl.when(pl.col('FutureHigh') > pl.col('RefPrice') * 1.08)
-          .then((pl.col('BidPrice1') - pl.col('RefPrice') * 1.08 - pl.col('TickSize') * 2) / pl.col('BidPrice1') * 1e4)
-          .otherwise((pl.col('BidPrice1') - pl.col('Close')) / pl.col('BidPrice1') * 1e4)
-          .alias('raw'),
+        raw_label(side).alias('raw'),
         ((pl.lit(dt.time(13, 25)) - pl.col('TransTime').dt.time()).dt.total_seconds()).alias('sec1325'),
     ).filter(pl.col('raw').abs() < 10000)
     return df.with_columns(
         (pl.col('txf_beta_60d') * pl.col('txf_to_1330_bp')).alias('hedge'),
         (pl.col('txf_residual_vol_to_1330') * 1e4).alias('volbp'),
     ).with_columns(
-        ((pl.col('raw') + pl.col('hedge')) / pl.col('volbp')).alias('z'),
-        (pl.col('raw') + pl.col('hedge')).alias('resbp'),
+        ((pl.col('raw') + sgn * pl.col('hedge')) / pl.col('volbp')).alias('z'),
+        (pl.col('raw') + sgn * pl.col('hedge')).alias('resbp'),
         pl.col('sec1325').cut(T_EDGES, labels=[str(i) for i in range(5)]).alias('tb'),
         pl.col('ToRef2').cut(R_EDGES, labels=[str(i) for i in range(6)]).alias('rb'),
     )
@@ -73,31 +92,32 @@ def aggregate(df, side, date, n_pool):
     }
 
 
-def scan(events_dir, start, end, step, sample):
+def scan(events_dir, start, end, step, sample, side):
+    entry_col = 'BidPrice1' if side == 'short' else 'AskPrice1'
     loader = TxfDataLoader(PROJECT_ROOT / 'data/txfTickData')
     days = sorted(f.stem for f in Path(events_dir).glob('*.parquet') if start <= f.stem <= end)[::step]
     rows = []
     for i, d in enumerate(days):
         try:
             ev = pl.scan_parquet(Path(events_dir) / f'{d}.parquet').select(
-                'TransTime', 'QuoteCode', 'BidPrice1', 'Close', 'FutureHigh', 'RefPrice', 'TickSize',
+                'TransTime', 'QuoteCode', 'BidPrice1', 'AskPrice1', 'Close', 'FutureHigh', 'RefPrice', 'TickSize',
                 'TrialMatch', 'day_amount_rank', 'txf_beta_60d', 'txf_to_1330_bp', 'txf_residual_vol_to_1330',
             ).filter(
-                (pl.col('BidPrice1') > 0) & (pl.col('TrialMatch') == 0)
+                (pl.col(entry_col) > 0) & (pl.col('TrialMatch') == 0)
                 & (pl.col('TransTime').dt.time() > dt.time(9, 0, 30))
                 & (pl.col('TransTime').dt.time() < dt.time(12, 30))
                 & (pl.col('day_amount_rank') <= 150)
             ).with_columns(((pl.col('BidPrice1') - pl.col('RefPrice')) / pl.col('RefPrice')).round(6).alias('ToRef2')
             ).filter((pl.col('ToRef2') > -0.015) & (pl.col('ToRef2') < 0.05)).collect()
-            rows.append(aggregate(enrich(ev), 'condition', d, len(ev)))
+            rows.append(aggregate(enrich(ev, side), 'condition', d, len(ev)))
 
             pm = pl.scan_parquet(PROJECT_ROOT / f'data/preMarket/{d}_preMarketData.parquet').select(
                 'QuoteCode', 'day_amount_rank', 'nextday_allow_day_trade_mark',
                 'txf_beta_60d', 'txf_residual_vol_0900_1330_60d')
             base = pl.scan_parquet(PROJECT_ROOT / f'data/tickData/{d}_StockTick.parquet').select(
-                'TransTime', 'QuoteCode', 'BidPrice1', 'Close', 'FutureHigh', 'RefPrice', 'TrialMatch'
+                'TransTime', 'QuoteCode', 'BidPrice1', 'AskPrice1', 'Close', 'FutureHigh', 'RefPrice', 'TrialMatch'
             ).filter(
-                (pl.col('BidPrice1') > 0) & (pl.col('TrialMatch') == 0)
+                (pl.col(entry_col) > 0) & (pl.col('TrialMatch') == 0)
                 & (pl.col('TransTime').dt.time() > dt.time(9, 0, 30))
                 & (pl.col('TransTime').dt.time() < dt.time(12, 30))
             ).join(pm, on='QuoteCode', how='inner').filter(
@@ -110,7 +130,7 @@ def scan(events_dir, start, end, step, sample):
             base = base.sample(n=min(sample, n_pool), seed=int(d))
             base = base.with_columns(tick_size(pl.col('BidPrice1')).alias('TickSize')).sort('TransTime')
             base = add_txf_event_residual_vol(attach_txf_to_1330_return(base, d, loader))
-            rows.append(aggregate(enrich(base), 'baseline', d, n_pool))
+            rows.append(aggregate(enrich(base, side), 'baseline', d, n_pool))
             if i % 20 == 0:
                 print(f'[{i + 1}/{len(days)}] {d}', flush=True)
         except Exception as e:  # noqa: BLE001
@@ -168,5 +188,6 @@ if __name__ == '__main__':
     ap.add_argument('--end', default='20991231')
     ap.add_argument('--step', type=int, default=3)
     ap.add_argument('--sample', type=int, default=25000)
+    ap.add_argument('--side', choices=['short', 'long'], default='short')
     args = ap.parse_args()
-    report(scan(args.events_dir, args.start, args.end, args.step, args.sample))
+    report(scan(args.events_dir, args.start, args.end, args.step, args.sample, args.side))
