@@ -1,1 +1,1 @@
-# research/negFill package
+"""Time-series signal research package."""

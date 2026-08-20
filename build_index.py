@@ -4,7 +4,7 @@ build_index.py
 逐日掃描 tickFeature，過濾出符合以下條件的 tick：
     (Spread.diff() != 0)  &  (FillLots_atLow < 0)
 
-輸出：research/negFill/data_index.parquet
+輸出：research/timeSeries/data_index.parquet
       欄位 = ['Date', 'QuoteCode', 'ChannelSeq']
 """
 
@@ -16,7 +16,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[3]   # HFTResearch/
 
 TICK_FEATURE_DIR = PROJECT_ROOT / "data" / "tickFeature"
-OUTPUT_DIR       = PROJECT_ROOT / "src" / "research" / "negFill"
+OUTPUT_DIR       = PROJECT_ROOT / "src" / "research" / "timeSeries"
 OUTPUT_PATH      = OUTPUT_DIR / "data_index.parquet"
 
 # --------------- filter logic ---------------
@@ -122,7 +122,7 @@ def build_index(forcefetch: bool = False) -> pl.DataFrame:
 # --------------- main ---------------
 if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description="Build negFill data_index")
+    parser = argparse.ArgumentParser(description="Build time-series signal data_index")
     parser.add_argument("--force", action="store_true", help="Force rebuild even if index exists")
     args = parser.parse_args()
     build_index(forcefetch=args.force)

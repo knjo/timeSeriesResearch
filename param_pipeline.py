@@ -1,5 +1,5 @@
 """
-NegFill Ridge Regression Parameter Grid Search Pipeline
+Time-Series Signal Ridge Regression Parameter Grid Search Pipeline
 ========================================================
 Grid search over:
   - n_training_days: [30, 40, 50, 60, 90]
