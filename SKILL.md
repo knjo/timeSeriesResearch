@@ -75,6 +75,7 @@ netM = residual - groupby(['Date']).transform('mean')              # 選股 labe
 
 - z 是「幾個標準差」。**z 不是零均值**，水位隨 regime 漂移（negFill 曾漂到 -0.25σ）⇒ 門檻必須是相對式，絕不能用固定絕對值。
 - **架構決策**：停損停利只改 label 的出場價；vol、β、txf return 全部維持原估計（13:30 horizon），不做停損條件下的重估——已知近似（停損事件最適對沖 k≈0.12，非停損 k≈0.71，Epps 效應），換取 hedge 腿嚴格 ex-ante 與實作單純。`condition_benchmark.py --side long|short` 已內建這兩套 label。
+- **預告擴充（尚未實作，先討論再動）**：短時間 / tick 首達 label（如多方「上 4 tick 先於下 3 tick」）。屆時三件事要配套：vol 正規化（U-clock 假設到收盤 horizon，首達出場時間是隨機的）、hedge 腿（txf 要量到出場時點而非 13:30，TXF L1 資料足以支援）、評估口徑（離散 label 改看命中率/期望值，且 4/3 tick 門檻與 TickBP 的比例會隨價位改變）。
 - pred 換回 BP 是「乘」vol 不是除；只在過費用檢查時做，寫新欄位不要覆寫。
 
 ## 3. 特徵紀律
