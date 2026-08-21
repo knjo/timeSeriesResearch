@@ -36,6 +36,7 @@ description: timeSeries 乾淨訊號研究範本（de-beta + U-shape vol normali
 - **禁用 raw 口徑估切割力**：2026 baseline 的 raw 就有 +35bp（全是市場下跌），raw 會把任何空方條件誇成有效。
 - baseline 的 z_std 應 ≈ 1（U-clock 全池 sanity）；negFill 案例另示範「條件切割力沒死、死的是其上的橫斷面排序」——兩者要分開監控。
 - **多方及格線更高**：baseline 多方 z 水位 ≈ −0.157σ（taker buy 付 spread + 池內日內下漂，raw −38bp；空方 baseline +9.7bp）——多方 condition 要先爬出這個結構坑。實測：Overshoot 掃單事件（2026-08-21 pilot）雙向皆無切割力（|Δz|≤0.12、t<2、月一致性丟銅板），僅 vol 擴張 +15~20%，適合當特徵不適合當 condition。
+- **方法論回收測試（2026-08-21）通過**：盲挖 `FillLots_atLow` 找回 negFill——負向家族全體 Δz_short>0、FL_onset（轉入負向）2025 達 +0.106σ/t3.5/正月10/11；裸「負狀態×成交事件」+0.035σ vs 真 negFill +0.084σ ⇒ spread/B1 變動去重讓切割力翻倍。探勘文法：狀態變數 ×（轉換點 vs 更新事件）× 深度分層 × 盤口互動。
 - 及格線是以 negFill 為錨的初稿，累積第二、三個 condition 後再校。
 
 ## 1. 資料流
