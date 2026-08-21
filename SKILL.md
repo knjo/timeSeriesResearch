@@ -54,6 +54,8 @@ description: timeSeries 乾淨訊號研究範本（de-beta + U-shape vol normali
 決策 2×2：disjoint 有切割力（≥0.05σ、regime 穩）× 低重疊（corr<~0.7）→ 真容量、全流程開發；
 × 高重疊 → 修枝/加碼/特徵；disjoint 無切割力 → 棄（低重疊=Overshoot 型、高重疊=重複發明）。
 
+**第二本書的最終及格線（邊際 Sharpe 規則）**：S_new > ρ × S_base（ρ 用前篩 proxy corr 估）。單筆 BP 只需蓋過費用，不是 kill 條件；相似度才是——ρ 0.9 需 S>2.0、0.7 需 1.55、0.5 需 1.11、0.3 只需 0.67（以 baseline 2026 S=2.22 計）。同 stock-day universe 出來的書 ρ 天生 0.85+，要低 ρ 得在股票日層面分開：不同 rank 段/價格帶/時段/多方。實例：FH15 書 S=1.47 本身不差，敗在 ρ=0.90 需 2.0。
+
 - 及格線是以 negFill 為錨的初稿，累積第二、三個 condition 後再校。
 
 ## 1. 資料流
