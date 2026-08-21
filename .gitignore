@@ -8,3 +8,5 @@ report/
 !baseline/*.parquet
 data_fh15/
 fh15_index.parquet
+data_fhL/
+fhL_index.parquet
