@@ -19,6 +19,8 @@ description: timeSeries 乾淨訊號研究範本（de-beta + U-shape vol normali
 
 常設儀表：月度 base-rate 表 E[z|C]（條件切割力）。它比模型 IC 更上游，它歸零時下游全免談。
 
+**推論（兩次實證：AB 門檻節流、兩層額度）**：分佈手術只能在上游做——樣本切乾淨後模型/門檻/回測每層受益；反之在下游（門檻收緊、資本配置分層）補救稀釋樣本，只會縮規模不會提品質。
+
 ### 0.1 Condition 驗收指標（追蹤儀表板，基準：negFill 實測 2025-02~2026-08）
 
 新 condition 先跑 `condition_benchmark.py`（同靜態濾網下 vs 全 tick 流均勻抽樣），看三組指標：
