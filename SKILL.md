@@ -50,6 +50,7 @@ description: timeSeries 乾淨訊號研究範本（de-beta + U-shape vol normali
 1. **stock-day 資本重疊率**（雙向）——用 stock-day 層不是 tick 層：倉位上限下「出現在哪些股票日」決定書的相關性（雙書實驗 corr 0.94 的來源）。
 2. **disjoint 段殘餘切割力**（主判準）——「新 ∧ ¬negFill」事件的 Δz。edge 全在交集＝negFill 的另一種寫法（深度=子集、disjoint 為空的極端案例）。
 3. **日級 proxy 損益相關**——雙方「每日事件 mean z」序列的 corr，是未來兩本書損益相關的上界，模型跑之前就能預測。
+4. **視同一筆重疊率**（書級，執行層）——同日同檔且（|ΔToRef|≤1% 或 |Δt|≤60s）即視為同一筆（組內最近鄰配對，見 test/20260821_fh15_line/same_trade_overlap.py）。量「進場相似度」，用於流動性競爭評估與實盤疊加時的雙重吃單折扣；hold-to-close 下損益相關仍以日損益 ρ 為準（實例：FH15 tick 5% / 視同一筆 58% / stock-day 74% / ρ 0.90）。短 horizon label 時代此尺升為主尺。
 
 決策 2×2：disjoint 有切割力（≥0.05σ、regime 穩）× 低重疊（corr<~0.7）→ 真容量、全流程開發；
 × 高重疊 → 修枝/加碼/特徵；disjoint 無切割力 → 棄（低重疊=Overshoot 型、高重疊=重複發明）。
