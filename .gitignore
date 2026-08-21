@@ -6,3 +6,5 @@ __pycache__/
 data/
 report/
 !baseline/*.parquet
+data_fh15/
+fh15_index.parquet
