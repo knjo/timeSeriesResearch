@@ -1,0 +1,89 @@
+{
+  "candidate_definitions": {
+    "fh_neg_absorption": "fresh trigger, depth ratio <= -8, <= 1.5 ticks below high, and bullish 2-of-3 tick-feature score",
+    "fh_neg_depth8": "fresh trigger and F_high / prior top depth <= -8",
+    "fh_neg_far": "fresh trigger, F_high < 0, and >= 4 ticks below high",
+    "fh_neg_near": "fresh trigger, F_high < 0, and <= 1.5 ticks below high",
+    "fh_neg_rejection": "fresh trigger, depth ratio <= -8, >= 4 ticks below high, and bearish 2-of-3 tick-feature score",
+    "fh_neg_sample": "fresh sample trigger and F_high < 0",
+    "fh_pos_breakout": "fresh trigger, depth ratio >= 2, <= 1.5 ticks below high, and bullish 2-of-3 tick-feature score",
+    "fh_pos_depth2": "fresh trigger and F_high / prior top depth >= 2",
+    "fh_pos_exhaustion": "fresh trigger, depth ratio >= 2, <= 1.5 ticks below high, and bearish 2-of-3 tick-feature score",
+    "fh_pos_far": "fresh trigger, F_high > 0, and >= 4 ticks below high",
+    "fh_pos_near": "fresh trigger, F_high > 0, and <= 1.5 ticks below high",
+    "fh_pos_sample": "fresh sample trigger and F_high > 0"
+  },
+  "candidate_ids": [
+    "fh_pos_sample",
+    "fh_neg_sample",
+    "fh_pos_depth2",
+    "fh_neg_depth8",
+    "fh_pos_near",
+    "fh_pos_far",
+    "fh_neg_near",
+    "fh_neg_far",
+    "fh_pos_breakout",
+    "fh_pos_exhaustion",
+    "fh_neg_rejection",
+    "fh_neg_absorption"
+  ],
+  "candidate_registry": "filllots-at-high-feature-v1",
+  "contract": "filllots_at_high_feature_bias_sweep/v1",
+  "control_sample_size": null,
+  "end": "20260824",
+  "failures": [],
+  "family_id": "filllots_at_high_feature",
+  "family_version": "1",
+  "label_profile_hash": "bc3c3adef1cb3dc7b4e43d27c203ca8b077c56c6f1f0a7882c18fcd19639a3cd",
+  "label_profile_id": "negfill.short_taker_stop108.v1",
+  "pool_id": "tw_equity_daytrade_rank150_090030_123000_bidref_v1",
+  "pool_version": "1",
+  "primary_estimand": "shared_pool",
+  "quarantined_daily_outputs": [],
+  "sessions": [
+    "20260824"
+  ],
+  "source_identities": {
+    "20260824": {
+      "pre_market": {
+        "mtime_ns": 1787733656708110784,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260824_preMarketData.parquet",
+        "size": 1141161
+      },
+      "tick_data": {
+        "mtime_ns": 1787733021463021620,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260824_StockTick.parquet",
+        "size": 166045231
+      },
+      "tick_feature": {
+        "mtime_ns": 1787733414948649686,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260824_tickFeature.parquet",
+        "size": 684100386
+      },
+      "txf_tick": {
+        "mtime_ns": 1787733110154042903,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260824_TxfTick.parquet",
+        "size": 180547115
+      }
+    }
+  },
+  "source_identity": {
+    "column": "source_identities_json",
+    "fields": [
+      "path",
+      "size",
+      "mtime_ns"
+    ],
+    "sources": [
+      "tick_data",
+      "tick_feature",
+      "pre_market",
+      "txf_tick"
+    ]
+  },
+  "start": "20260824",
+  "step": 1,
+  "stock_time_bucket": "5m",
+  "stock_time_equal_metric": "stock_time_equal_delta_z",
+  "stock_time_equal_weighting": "condition-minus-pool mean z within QuoteCode/time bucket; equal active buckets within QuoteCode, then equal active QuoteCode"
+}

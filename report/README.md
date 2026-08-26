@@ -11,6 +11,7 @@ README 或 skill。
 | `20260819_20260821_legacy_digest` | archived summary-only；舊 skill 與舊 test index 的完整封存 | [digest](studies/20260819_20260821_legacy_digest/REPORT.md) · [experiment table](studies/20260819_20260821_legacy_digest/EXPERIMENT_TABLE.md) | [08-19～21 study index](../test/README.md) |
 | `20260825_filllots_at_low_framework` | scoped/canonical event-shaping 與 matched attribution；不是 raw-state Stage 0 gate | [report](studies/20260825_filllots_at_low_framework/REPORT.md) | [study code](../test/20260825_filllots_at_low_framework/) |
 | `20260826_filllots_at_low_state_bias` | canonical raw-state long/short positive-control recovery | [report](studies/20260826_filllots_at_low_state_bias/REPORT.md) | [study code](../test/20260826_filllots_at_low_state_bias/) |
+| `20260826_filllots_at_high_feature_bias` | scoped shared-pool long/short bias；dense 與 calendar complement 通過，但同股／時段 attribution 反向 | [report](studies/20260826_filllots_at_high_feature_bias/REPORT.md) | [study code](../test/20260826_filllots_at_high_feature_bias/) |
 
 ## 新報告慣例
 

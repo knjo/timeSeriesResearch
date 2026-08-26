@@ -5,13 +5,18 @@
 > [FRAMEWORK.md](../FRAMEWORK.md) 開始，不要繼承本文件的 selector、方向、
 > universe、分桶或門檻作為隱含預設。
 
+> 根目錄 `build_index.py`／`data_loader.py` 是已確認 negFill 點位的正式獨立
+> 管線；`src/research/negFill` 只供查看外層形態，不是 import 或資料依賴。
+
 本文件保留 negFill 的 beta/TXF 資料契約、逐筆策略規格、research／production
 落差與最低驗收案例，讓相容性與歷史決策仍可追溯。
 
 ## 專案入口與 beta 資料契約
 
-- `build_index.py`：negFill selector adapter，輸出 canonical event index。
-- `data_loader.py`：negFill dataset adapter；legacy 與 causal merge profile 明確分版。
+- `build_index.py`：固定正式 selector，增量更新 `data_index.parquet`，不寫 manifest。
+- `data_loader.py`：按正式 index 合併並更新 `data/YYYYMMDD.parquet`，不寫 manifest。
+- `framework/profiles/negfill.py`：只供 versioned research calibration；不被上述正式
+  入口 import。
 - `time_series_research_model.py`：無 import side effect 的 negFill reference
   training adapter；使用 residual-z labels、固定 feature manifest 與 causal-v2。
 - `time_series_research.ipynb` / `time_series_research_model.ipynb`：互動研究筆記本。

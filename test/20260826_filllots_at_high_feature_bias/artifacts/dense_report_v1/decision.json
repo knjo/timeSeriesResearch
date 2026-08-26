@@ -1,0 +1,81 @@
+{
+  "contract": "filllots_at_high_dense_acceptance/v1",
+  "decisions": [
+    {
+      "accepted": true,
+      "candidate_id": "fh_neg_rejection",
+      "dense_acceptance_decision": "accepted",
+      "direction": "short",
+      "gates": {
+        "effect_2025_positive": true,
+        "effect_2026_positive": true,
+        "full_effect_positive": true,
+        "full_hac_p_lt_0_05": true,
+        "full_positive_month_ratio_ge_0_60": true
+      },
+      "metrics": {
+        "effect_2025": 0.14772468893909627,
+        "effect_2026": 0.057044314487440226,
+        "full_equal_day_delta_raw_bp_mean": 12.079901486326808,
+        "full_equal_day_delta_residual_bp_mean": 18.009857925076915,
+        "full_equal_day_delta_z_mean": 0.11034315159865295,
+        "full_hac_p_two_sided": 3.0577767754122145e-15,
+        "full_positive_month_ratio": 1.0,
+        "full_stock_day_equal_delta_z_mean": -0.22994845316214632,
+        "full_stock_day_equal_hac_p_two_sided": 5.504959775421132e-305,
+        "full_stock_time_equal_delta_z_mean": -0.055896512698774166,
+        "full_stock_time_equal_hac_p_two_sided": 0.0
+      },
+      "promotion_decision": "promoted",
+      "thresholds": {
+        "hac_p_strictly_less_than": 0.05,
+        "positive_month_ratio_min": 0.6
+      }
+    },
+    {
+      "accepted": true,
+      "candidate_id": "fh_pos_breakout",
+      "dense_acceptance_decision": "accepted",
+      "direction": "long",
+      "gates": {
+        "effect_2025_positive": true,
+        "effect_2026_positive": true,
+        "full_effect_positive": true,
+        "full_hac_p_lt_0_05": true,
+        "full_positive_month_ratio_ge_0_60": true
+      },
+      "metrics": {
+        "effect_2025": 0.06020129718539201,
+        "effect_2026": 0.11830856394488476,
+        "full_equal_day_delta_raw_bp_mean": -1.9458705339426716,
+        "full_equal_day_delta_residual_bp_mean": 7.841697678933859,
+        "full_equal_day_delta_z_mean": 0.08415509066337439,
+        "full_hac_p_two_sided": 3.8312066313167047e-08,
+        "full_positive_month_ratio": 0.9473684210526315,
+        "full_stock_day_equal_delta_z_mean": -0.2719145259895497,
+        "full_stock_day_equal_hac_p_two_sided": 1.1843712828715561e-301,
+        "full_stock_time_equal_delta_z_mean": -0.07114587824443824,
+        "full_stock_time_equal_hac_p_two_sided": 3.660151417364708e-275
+      },
+      "promotion_decision": "promoted",
+      "thresholds": {
+        "hac_p_strictly_less_than": 0.05,
+        "positive_month_ratio_min": 0.6
+      }
+    }
+  ],
+  "generated_at_utc": "2026-08-26T09:18:37.132173+00:00",
+  "promotion": {
+    "contract": "filllots_at_high_sparse_promotion/v1",
+    "path": "/home/kevin/Project/HFT/src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/sparse_report_v1/promotion.json",
+    "sha256": "b3a78250b6dff63467ebc8cfd50c38b1f34f2299dd3003d2991e0856cecbc0bd"
+  },
+  "study_spec": {
+    "dense_check": {
+      "acceptance": "positive full-period equal-day delta-z with HAC p < 0.05, positive 2025 and 2026 effects, and positive-month ratio >= 0.60",
+      "session_step": 1
+    },
+    "path": "/home/kevin/Project/HFT/src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/study_spec.json",
+    "sha256": "feff1e289ef73fdd9c1b8c1c5d474baa69f5d76ceeb79e4a08d140ce45b60641"
+  }
+}

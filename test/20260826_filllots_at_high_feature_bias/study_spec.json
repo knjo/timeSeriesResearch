@@ -1,0 +1,51 @@
+{
+  "contract": "filllots_at_high_feature_bias_study/v1",
+  "data_end_inclusive": "20260825",
+  "primary_estimand": "shared_pool",
+  "sampling": {
+    "large_fill": "formal trade and FillLots >= max(20, D-1 same-side q95)",
+    "md_first_visit": "B1 or A1 moves by at least half a tick and the integer (B1, A1) pair is first seen in the current RecordHigh epoch",
+    "trigger": "md_first_visit OR large_fill"
+  },
+  "candidate_family": {
+    "correction": "BH within each directional label over all 12 fixed candidates",
+    "ids": [
+      "fh_pos_sample",
+      "fh_neg_sample",
+      "fh_pos_depth2",
+      "fh_neg_depth8",
+      "fh_pos_near",
+      "fh_pos_far",
+      "fh_neg_near",
+      "fh_neg_far",
+      "fh_pos_breakout",
+      "fh_pos_exhaustion",
+      "fh_neg_rejection",
+      "fh_neg_absorption"
+    ]
+  },
+  "sparse_screen": {
+    "session_step": 5,
+    "promotion_per_label": {
+      "active_day_ratio_min": 0.8,
+      "bh_q_full_max": 0.1,
+      "effect_direction": "equal_day_delta_z_mean > 0",
+      "events_per_active_day_min": 20,
+      "positive_month_ratio_min": 0.65,
+      "year_effect_direction": "2025 and 2026 equal_day_delta_z_mean > 0"
+    },
+    "ranking": "lowest within-label BH q, then largest equal-day delta-z",
+    "promotion_cap": 1,
+    "fallback": "if no candidate clears every gate, dense-check the lowest raw HAC p candidate only as a labeled falsification check, not as a discovery"
+  },
+  "dense_check": {
+    "session_step": 1,
+    "acceptance": "positive full-period equal-day delta-z with HAC p < 0.05, positive 2025 and 2026 effects, and positive-month ratio >= 0.60"
+  },
+  "causal_exclusions": [
+    "Close and close-derived condition fields",
+    "FutureHigh and FutureLow",
+    "future price or future profit fields",
+    "SpreadNarrowOrderTime and SpreadNarrowSide"
+  ]
+}

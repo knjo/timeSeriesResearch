@@ -8,7 +8,6 @@ from unittest.mock import patch
 
 import polars as pl
 
-from src.research.timeSeries.build_index import filter_one_day
 from src.research.timeSeries.framework.events import (
     EVENT_KEY_COLS,
     DataRoots,
@@ -303,38 +302,6 @@ class EventFrameworkTest(unittest.TestCase):
                 pl.DataFrame({"QuoteCode": ["A"], "ChannelSeq": ["1"]}),
                 date="20240102",
             )
-
-    def test_negfill_adapter_sorts_before_diff_and_requires_bid_pre_move(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            path = root / "20240102_tickFeature.parquet"
-            pl.DataFrame(
-                {
-                    "QuoteCode": ["A", "A", "A"],
-                    "ChannelSeq": pl.Series([2, 1, 3], dtype=pl.UInt64),
-                    "Spread": [2.0, 1.0, 2.0],
-                    "BidPreMove": [0.5, 0.5, 0.5],
-                    "FillLots_atLow": [-1.0, -1.0, -1.0],
-                }
-            ).write_parquet(path)
-
-            result = filter_one_day(path)
-            self.assertIsNotNone(result)
-            assert result is not None
-            self.assertEqual(result.rows(), [("20240102", "A", 2)])
-
-            missing_path = root / "20240103_tickFeature.parquet"
-            pl.DataFrame(
-                {
-                    "QuoteCode": ["A"],
-                    "ChannelSeq": pl.Series([1], dtype=pl.UInt64),
-                    "Spread": [1.0],
-                    "FillLots_atLow": [-1.0],
-                }
-            ).write_parquet(missing_path)
-            with self.assertRaises(EventIndexValidationError):
-                filter_one_day(missing_path)
-
 
 if __name__ == "__main__":
     unittest.main()

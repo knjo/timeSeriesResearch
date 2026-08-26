@@ -1,0 +1,79 @@
+{
+  "audited_dates": [
+    "20250211",
+    "20250402",
+    "20250526",
+    "20250715",
+    "20250902",
+    "20251027",
+    "20251215",
+    "20260204",
+    "20260408",
+    "20260528",
+    "20260720",
+    "20260824"
+  ],
+  "contract": "filllots_at_high_overlap_audit/v1",
+  "date_step": 7,
+  "effect_correlations": [
+    {
+      "candidate_id": "fh_neg_rejection",
+      "corr_with_fillhigh_base": 0.581998432560851,
+      "corr_with_filllow_negative_state": 0.6986455236262071,
+      "direction": "short",
+      "fillhigh_base_id": "fh_neg_sample",
+      "sessions": 76
+    },
+    {
+      "candidate_id": "fh_pos_breakout",
+      "corr_with_fillhigh_base": 0.6466051923145179,
+      "corr_with_filllow_negative_state": 0.2544614234070279,
+      "direction": "long",
+      "fillhigh_base_id": "fh_pos_sample",
+      "sessions": 76
+    }
+  ],
+  "overlap_summary": [
+    {
+      "candidate_id": "fh_neg_rejection",
+      "candidate_stock_day_overlap_rate": 0.9892828999211978,
+      "candidate_stock_days": 6345,
+      "candidate_tick_overlap_rate": 0.3248645474959313,
+      "candidate_ticks": 194164,
+      "intersection_stock_days": 6277,
+      "intersection_ticks": 63077,
+      "reference_id": "negfill_spread_bid_move_v1",
+      "reference_stock_day_overlap_rate": 0.29335888208627375,
+      "reference_stock_days": 21397,
+      "reference_tick_overlap_rate": 0.03003755348967446,
+      "reference_ticks": 2099938,
+      "sessions": 12,
+      "stock_day_jaccard": 0.29242953645469366,
+      "tick_jaccard": 0.028272654945596755
+    },
+    {
+      "candidate_id": "fh_pos_breakout",
+      "candidate_stock_day_overlap_rate": 0.9016863406408094,
+      "candidate_stock_days": 5930,
+      "candidate_tick_overlap_rate": 0.00882300648946573,
+      "candidate_ticks": 44996,
+      "intersection_stock_days": 5347,
+      "intersection_ticks": 397,
+      "reference_id": "negfill_spread_bid_move_v1",
+      "reference_stock_day_overlap_rate": 0.24989484507173904,
+      "reference_stock_days": 21397,
+      "reference_tick_overlap_rate": 0.00018905320061830396,
+      "reference_ticks": 2099938,
+      "sessions": 12,
+      "stock_day_jaccard": 0.24326660600545952,
+      "tick_jaccard": 0.00018512154371782814
+    }
+  ],
+  "reference_id": "negfill_spread_bid_move_v1",
+  "scope": "raw selector keys on a deterministic sparse-session audit",
+  "selected": {
+    "long": "fh_pos_breakout",
+    "short": "fh_neg_rejection"
+  },
+  "source_session_count": 76
+}

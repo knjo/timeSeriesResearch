@@ -1,4 +1,8 @@
-# timeSeries framework 使用方式
+# timeSeries 研究 framework 使用方式
+
+本文件只描述未來事件研究。已確定使用的正式點位由根目錄
+`build_index.py`／`data_loader.py` 維護；framework 不得寫入
+`data_index.parquet`、`data/`，也不得替正式入口產生 manifest。
 
 框架把一條研究線拆成可獨立版本化的六份契約：event、dataset、label、
 feature、model、threshold。事件名稱可以是 negFill、成交量突變、盤口失衡或
@@ -34,11 +38,15 @@ def select_my_event(day):
 
 
 roots = DataRoots.from_project_root(Path("."))
+artifact_root = Path(
+    "src/research/timeSeries/test/20260826_large_trade/"
+    "artifacts/large_trade/v1"
+)
 event_spec = EventIndexSpec(
     event_id="large_trade",
     selector_version="1",
     selector=select_my_event,
-    index_path=Path("data/events/large_trade/v1/index.parquet"),
+    index_path=artifact_root / "index.parquet",
     required_sources=("tick_data", "pre_market"),
     calendar_source="tick_data",
 )
@@ -64,7 +72,7 @@ dataset_spec = EventDatasetSpec(
     event_id="large_trade",
     dataset_version="1",
     index_path=event_spec.index_path,
-    output_dir=Path("data/events/large_trade/v1/materialized"),
+    output_dir=artifact_root / "daily",
     merge_options=MergeOptions(),
 )
 build_event_dataset(dataset_spec, roots=roots)
@@ -246,15 +254,17 @@ audit = build_prior_session_thresholds(
 Audit table會保存 history start/end、window sessions、實際 support sessions、
 observations、quantile、window basis 與 score unit。缺門檻時 gate 為 False。
 
-## 7. negFill 的相容與凍結範圍
+## 7. negFill reference 與正式輸出的邊界
 
-- `framework/profiles/negfill.py` 擁有 negFill selector、short label、固定
-  feature manifest 與 merge factories；`build_index.py` 只是相容 CLI。
+- `framework/profiles/negfill.py` 保存研究校準用的 negFill selector、short label、
+  feature manifest 與 merge factories；它不是正式入口的 runtime dependency。
 - 共用台股 universe 在 `profiles/tw_equity.py`；benchmark long 與 FHL maker
   labels 分別在 `profiles/benchmark.py`、`profiles/fhl.py`，不屬於 negFill。
-- `data_loader.py --merge-profile negfill-legacy-v1` 只為重現既有 `data/`。
-- 新版 reference merge 請使用 `--merge-profile causal-v2` 並指定新的
-  `--output-dir`。
+- 根目錄 `build_index.py` 直接維護固定事件的 `data_index.parquet`；根目錄
+  `data_loader.py` 直接維護 `data/YYYYMMDD.parquet`。兩者不得 import framework，
+  也不寫 manifest。
+- 新版 reference merge 必須建立新的 `EventDatasetSpec`，並將 `index_path` 與
+  `output_dir` 指向 study-local versioned artifact 目錄或 `/tmp`。
 - `baseline/timeseries_points.parquet` 是 frozen legacy artifact；修改框架、
   文件或測試都不得原地重建它。新的結果以新的 dataset/model/study version
   並存，先做 parity／差異歸因後才可宣告取代。

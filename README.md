@@ -1,7 +1,14 @@
-# timeSeries：泛用日內事件研究框架
+# timeSeries：正式點位管線與泛用日內事件研究框架
 
-這個模組研究「任意可落在 `(Date, QuoteCode, ChannelSeq)` 的日內事件」，
-不是 negFill 策略本身。框架要驗證兩件事：
+這個模組有兩條互相獨立的路徑：
+
+- **正式點位**：根目錄 `build_index.py` 與 `data_loader.py` 維護已確定使用的
+  negFill event，逐日更新 `data_index.parquet` 與 `data/YYYYMMDD.parquet`。
+- **泛用研究**：`framework/` 研究任意可落在
+  `(Date, QuoteCode, ChannelSeq)` 的日內事件，輸出只能進 study-local versioned
+  artifact 目錄或 `/tmp`。
+
+泛用框架要驗證兩件事：
 
 1. event condition 能否從同一個 eligible control pool 切出穩定的 bias；
 2. 這個 bias 經 prior beta 去市場成分、事件 horizon 波動標準化後，能否用
@@ -24,16 +31,18 @@ recovery。先測原始 state，不得預先改成 state update、epoch entry、
 下單 cooldown。完整研究順序與報告規格見
 [DISCOVERY_PROTOCOL.md](docs/protocols/DISCOVERY_PROTOCOL.md)。
 
-## 核心與 reference 的邊界
+## 正式點位與研究框架的邊界
 
-| 層 | 泛用契約 | reference profile／adapter |
-|---|---|---|
-| 事件 | `framework/events.py`：多來源 selector、canonical keys、manifest | `build_index.py` |
-| 資料 | `framework/dataset.py`：row-preserving merge、顯式 universe、lineage | `data_loader.py` |
-| 標籤 | `framework/labels.py`：方向、執行、exit、hedge、vol 分離 | `framework/profiles/` |
-| 事件驗收 | `framework/condition_study.py`：共用 eligible labeled pool | `condition_benchmark.py` |
-| 特徵／模型 | `framework/features.py`、`model.py`：有序 manifest、causal preprocessing | `time_series_research_model.py` |
-| 門檻 | `framework/prior_thresholds.py`：prior-session quantile 與 audit | 研究自行提供 versioned spec |
+| 用途 | 入口 | 輸出 | 契約 |
+|---|---|---|---|
+| 正式事件 index | `build_index.py` | `data_index.parquet` | 固定 selector、依最新 Date 增量更新、不寫 manifest |
+| 正式每日點位 | `data_loader.py` | `data/YYYYMMDD.parquet` | 依 index 逐日合併、不寫 manifest |
+| 未來事件研究 | `framework/`、`framework/profiles/` | `test/<study_id>/artifacts/<event>/<version>/` 或 `/tmp` | versioned spec、lineage 與 manifest |
+| 研究驗收／模型 | `condition_benchmark.py`、`time_series_research_model.py` | study-local artifacts | 不得改寫正式輸出 |
+
+正式兩支入口不得 import `framework/`；framework 也不得把 artifact 指到上述正式
+index 或 daily 目錄。`src/research/negFill` 只供查看既有外層管線形態，不形成程式
+或資料依賴。
 
 詳細 API、最小範例與版本規則見 [FRAMEWORK.md](docs/FRAMEWORK.md)。negFill 的完整
 資料契約、研究歷史與執行規格已獨立到
@@ -85,14 +94,29 @@ spec = EventIndexSpec(
     event_id="my_event",
     selector_version="1",
     selector=select_event,
-    index_path=Path("data/events/my_event/v1/index.parquet"),
+    index_path=Path(
+        "src/research/timeSeries/test/20260826_my_event/"
+        "artifacts/my_event/v1/index.parquet"
+    ),
     required_sources=("tick_feature",),
 )
 build_event_index(spec, roots=roots)
 ```
 
 接著用 `EventDatasetSpec`、`DirectionalLabelSpec`、`FeatureManifest` 與
-`PriorQuantileSpec` 組合研究；不要複製 compatibility adapter 再改條件。
+`PriorQuantileSpec` 組合研究；不要修改正式 builder 來試尚未確定的條件。
+
+## 正式點位的日常使用
+
+```bash
+uv run python src/research/timeSeries/build_index.py
+uv run python src/research/timeSeries/data_loader.py
+```
+
+第一支只 append 比目前 `data_index.parquet` 最大 Date 更新的 tickFeature 日期；
+第二支略過既有舊日、刷新最新既有日期，並建立新日期的 daily parquet。需要限定或
+重建區間時使用 `--start YYYYMMDD --end YYYYMMDD`，並搭配 `--force` 才會覆寫
+已存在的指定日期。
 
 ## 框架的不變條件
 
@@ -106,10 +130,11 @@ build_event_index(spec, roots=roots)
 - 缺來源、缺 eligibility、重複鍵、schema/version 漂移都 fail closed。
 - prior threshold 明確區分 calendar sessions 與 sparse bucket observations。
 
-## 相容與凍結範圍
+## 正式輸出與凍結範圍
 
-- `build_index.py`、`data_loader.py`、`condition_benchmark.py` 與
-  `time_series_research_model.py` 是 reference／legacy adapters。
-- `data/` 與 `baseline/timeseries_points.parquet` 是 frozen legacy artifacts；
-  新 selector、merge、label、model 或 study 版本必須寫到新目錄，不能原地覆寫。
+- `build_index.py` 與 `data_loader.py` 是正式營運入口，不是 framework adapter；
+  `data_index.parquet` 與 `data/` 會隨新交易日增量更新。
+- 只有 `baseline/timeseries_points.parquet` 是 frozen legacy artifact。
+- 新 selector、merge、label、model 或 study 版本必須寫到 study-local 新目錄，
+  不能原地覆寫正式輸出。
 - frozen baseline 的契約與 hash 見 [baseline/BASELINE.md](baseline/BASELINE.md)。

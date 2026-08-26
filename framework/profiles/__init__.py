@@ -14,6 +14,14 @@ from .filllots_at_low import (
     select_filllots_at_low_candidates,
     select_filllots_at_low_state_candidates,
 )
+from .filllots_at_high import (
+    CANDIDATE_DESCRIPTIONS as FILLLOTS_AT_HIGH_CANDIDATE_DESCRIPTIONS,
+    CANDIDATE_IDS as FILLLOTS_AT_HIGH_CANDIDATE_IDS,
+    FILLLOTS_AT_HIGH_FEATURE_FAMILY_ID,
+    FILLLOTS_AT_HIGH_FEATURE_FAMILY_VERSION,
+    build_filllots_at_high_candidate_frame,
+    select_filllots_at_high_feature_candidates,
+)
 from .fhl import LONG_MAKER_TP109_V1
 from .negfill import (
     NEGFILL_V1,
@@ -37,10 +45,15 @@ __all__ = [
     "FILLLOTS_AT_LOW_STATE_CANDIDATE_DESCRIPTIONS",
     "FILLLOTS_AT_LOW_STATE_FAMILY_ID",
     "FILLLOTS_AT_LOW_STATE_FAMILY_VERSION",
+    "FILLLOTS_AT_HIGH_CANDIDATE_DESCRIPTIONS",
+    "FILLLOTS_AT_HIGH_CANDIDATE_IDS",
+    "FILLLOTS_AT_HIGH_FEATURE_FAMILY_ID",
+    "FILLLOTS_AT_HIGH_FEATURE_FAMILY_VERSION",
     "NEGFILL_V1",
     "NEXTDAY_ALLOW_DAY_TRADE_UNIVERSE_V1",
     "SHORT_TAKER_STOP108_V1",
     "build_filllots_at_low_candidate_frame",
+    "build_filllots_at_high_candidate_frame",
     "negfill_event_index_spec",
     "negfill_causal_merge_options_v2",
     "negfill_legacy_merge_options_v1",
@@ -48,4 +61,5 @@ __all__ = [
     "select_negfill_keys",
     "select_filllots_at_low_candidates",
     "select_filllots_at_low_state_candidates",
+    "select_filllots_at_high_feature_candidates",
 ]

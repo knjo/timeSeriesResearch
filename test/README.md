@@ -17,11 +17,15 @@
 | [`20260821_long_line/`](20260821_long_line/) | FHL long pipeline、portfolio 與 refit | [legacy digest](../report/studies/20260819_20260821_legacy_digest/REPORT.md) |
 | [`20260825_filllots_at_low_framework/`](20260825_filllots_at_low_framework/) | 26-candidate event shaping、shared/matched attribution 與 overlap audit | [framework validation](../report/studies/20260825_filllots_at_low_framework/REPORT.md) |
 | [`20260826_filllots_at_low_state_bias/`](20260826_filllots_at_low_state_bias/) | 原始 sign state 的 long/short shared bias、HAC 與 distribution report | [state-bias report](../report/studies/20260826_filllots_at_low_state_bias/REPORT.md) |
+| [`20260826_filllots_at_high_feature_bias/`](20260826_filllots_at_high_feature_bias/) | MD first-visit／large-fill 去重、tickFeature interactions、sparse promotion 與 dense attribution | [feature-bias report](../report/studies/20260826_filllots_at_high_feature_bias/REPORT.md) |
 
 ## 儲存契約
 
 - 方法：`test/<study_id>/*.py`，進版控。
 - 結論：`report/studies/<study_id>/REPORT.md`，進版控。
 - Frozen point baseline：`baseline/`；不得原地覆寫。
-- 可重建 artifacts/cache：study-local ignored directory 或 `/tmp`，不進版控。
+- 可重建 artifacts/cache：`test/<study_id>/artifacts/<event>/<version>/` 或 `/tmp`，
+  不進版控，也不得指向正式 `data_index.parquet` 或 `data/`。
+- 正式每日點位由根目錄 `build_index.py`／`data_loader.py` 維護，不屬於 study
+  artifact。
 - 所有 Python 執行使用 `uv run`；新增 study 時同步更新本索引與 report index。

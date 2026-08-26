@@ -1,0 +1,1814 @@
+{
+  "candidate_definitions": {
+    "fh_neg_absorption": "fresh trigger, depth ratio <= -8, <= 1.5 ticks below high, and bullish 2-of-3 tick-feature score",
+    "fh_neg_depth8": "fresh trigger and F_high / prior top depth <= -8",
+    "fh_neg_far": "fresh trigger, F_high < 0, and >= 4 ticks below high",
+    "fh_neg_near": "fresh trigger, F_high < 0, and <= 1.5 ticks below high",
+    "fh_neg_rejection": "fresh trigger, depth ratio <= -8, >= 4 ticks below high, and bearish 2-of-3 tick-feature score",
+    "fh_neg_sample": "fresh sample trigger and F_high < 0",
+    "fh_pos_breakout": "fresh trigger, depth ratio >= 2, <= 1.5 ticks below high, and bullish 2-of-3 tick-feature score",
+    "fh_pos_depth2": "fresh trigger and F_high / prior top depth >= 2",
+    "fh_pos_exhaustion": "fresh trigger, depth ratio >= 2, <= 1.5 ticks below high, and bearish 2-of-3 tick-feature score",
+    "fh_pos_far": "fresh trigger, F_high > 0, and >= 4 ticks below high",
+    "fh_pos_near": "fresh trigger, F_high > 0, and <= 1.5 ticks below high",
+    "fh_pos_sample": "fresh sample trigger and F_high > 0"
+  },
+  "candidate_ids": [
+    "fh_pos_sample",
+    "fh_neg_sample",
+    "fh_pos_depth2",
+    "fh_neg_depth8",
+    "fh_pos_near",
+    "fh_pos_far",
+    "fh_neg_near",
+    "fh_neg_far",
+    "fh_pos_breakout",
+    "fh_pos_exhaustion",
+    "fh_neg_rejection",
+    "fh_neg_absorption"
+  ],
+  "candidate_registry": "filllots-at-high-feature-v1",
+  "contract": "filllots_at_high_feature_bias_sweep/v1",
+  "control_sample_size": null,
+  "end": "20260825",
+  "failures": [],
+  "family_id": "filllots_at_high_feature",
+  "family_version": "1",
+  "label_profile_hash": "bc3c3adef1cb3dc7b4e43d27c203ca8b077c56c6f1f0a7882c18fcd19639a3cd",
+  "label_profile_id": "negfill.short_taker_stop108.v1",
+  "pool_id": "tw_equity_daytrade_rank150_090030_123000_bidref_v1",
+  "pool_version": "1",
+  "primary_estimand": "shared_pool",
+  "quarantined_daily_outputs": [],
+  "sessions": [
+    "20250211",
+    "20250218",
+    "20250225",
+    "20250305",
+    "20250312",
+    "20250319",
+    "20250326",
+    "20250402",
+    "20250411",
+    "20250418",
+    "20250425",
+    "20250505",
+    "20250512",
+    "20250519",
+    "20250526",
+    "20250603",
+    "20250610",
+    "20250617",
+    "20250624",
+    "20250701",
+    "20250708",
+    "20250715",
+    "20250722",
+    "20250729",
+    "20250805",
+    "20250812",
+    "20250819",
+    "20250826",
+    "20250902",
+    "20250909",
+    "20250916",
+    "20250923",
+    "20251001",
+    "20251009",
+    "20251017",
+    "20251027",
+    "20251103",
+    "20251110",
+    "20251117",
+    "20251124",
+    "20251201",
+    "20251208",
+    "20251215",
+    "20251222",
+    "20251230",
+    "20260107",
+    "20260114",
+    "20260121",
+    "20260128",
+    "20260204",
+    "20260211",
+    "20260302",
+    "20260309",
+    "20260316",
+    "20260323",
+    "20260330",
+    "20260408",
+    "20260415",
+    "20260422",
+    "20260429",
+    "20260507",
+    "20260514",
+    "20260521",
+    "20260528",
+    "20260604",
+    "20260611",
+    "20260618",
+    "20260626",
+    "20260703",
+    "20260713",
+    "20260720",
+    "20260727",
+    "20260803",
+    "20260810",
+    "20260817",
+    "20260824"
+  ],
+  "source_identities": {
+    "20250211": {
+      "pre_market": {
+        "mtime_ns": 1787107276687122122,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250211_preMarketData.parquet",
+        "size": 913500
+      },
+      "tick_data": {
+        "mtime_ns": 1780038175377673631,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250211_StockTick.parquet",
+        "size": 111989887
+      },
+      "tick_feature": {
+        "mtime_ns": 1783754855864367230,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250211_tickFeature.parquet",
+        "size": 436539021
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045731342350788,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250211_TxfTick.parquet",
+        "size": 165281
+      }
+    },
+    "20250218": {
+      "pre_market": {
+        "mtime_ns": 1787107278851143400,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250218_preMarketData.parquet",
+        "size": 982414
+      },
+      "tick_data": {
+        "mtime_ns": 1780038214930848811,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250218_StockTick.parquet",
+        "size": 105530884
+      },
+      "tick_feature": {
+        "mtime_ns": 1783754922858745258,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250218_tickFeature.parquet",
+        "size": 411363408
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045731894344966,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250218_TxfTick.parquet",
+        "size": 184026
+      }
+    },
+    "20250225": {
+      "pre_market": {
+        "mtime_ns": 1787107281473169083,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250225_preMarketData.parquet",
+        "size": 1001185
+      },
+      "tick_data": {
+        "mtime_ns": 1780038253855022384,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250225_StockTick.parquet",
+        "size": 117243783
+      },
+      "tick_feature": {
+        "mtime_ns": 1783754993849146010,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250225_tickFeature.parquet",
+        "size": 463726625
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045732069343122,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250225_TxfTick.parquet",
+        "size": 194827
+      }
+    },
+    "20250305": {
+      "pre_market": {
+        "mtime_ns": 1787107284526198856,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250305_preMarketData.parquet",
+        "size": 1029740
+      },
+      "tick_data": {
+        "mtime_ns": 1780038295634209881,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250305_StockTick.parquet",
+        "size": 108966088
+      },
+      "tick_feature": {
+        "mtime_ns": 1783755066459556069,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250305_tickFeature.parquet",
+        "size": 427045053
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045732467338934,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250305_TxfTick.parquet",
+        "size": 282312
+      }
+    },
+    "20250312": {
+      "pre_market": {
+        "mtime_ns": 1787107287864231247,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250312_preMarketData.parquet",
+        "size": 1040675
+      },
+      "tick_data": {
+        "mtime_ns": 1780038336729395460,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250312_StockTick.parquet",
+        "size": 111509560
+      },
+      "tick_feature": {
+        "mtime_ns": 1783755134532940639,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250312_tickFeature.parquet",
+        "size": 437722938
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045732933334031,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250312_TxfTick.parquet",
+        "size": 280147
+      }
+    },
+    "20250319": {
+      "pre_market": {
+        "mtime_ns": 1787107291680268068,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250319_preMarketData.parquet",
+        "size": 1013032
+      },
+      "tick_data": {
+        "mtime_ns": 1780038376217574745,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250319_StockTick.parquet",
+        "size": 105822222
+      },
+      "tick_feature": {
+        "mtime_ns": 1783755203808332111,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250319_tickFeature.parquet",
+        "size": 414278024
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045733352329631,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250319_TxfTick.parquet",
+        "size": 353571
+      }
+    },
+    "20250326": {
+      "pre_market": {
+        "mtime_ns": 1787107295800307577,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250326_preMarketData.parquet",
+        "size": 989584
+      },
+      "tick_data": {
+        "mtime_ns": 1780038414786750691,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250326_StockTick.parquet",
+        "size": 93908143
+      },
+      "tick_feature": {
+        "mtime_ns": 1783755264646675991,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250326_tickFeature.parquet",
+        "size": 364888484
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045733614326881,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250326_TxfTick.parquet",
+        "size": 173522
+      }
+    },
+    "20250402": {
+      "pre_market": {
+        "mtime_ns": 1787107300397351361,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250402_preMarketData.parquet",
+        "size": 994594
+      },
+      "tick_data": {
+        "mtime_ns": 1780038459299954694,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250402_StockTick.parquet",
+        "size": 102540177
+      },
+      "tick_feature": {
+        "mtime_ns": 1783755343521121917,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250402_tickFeature.parquet",
+        "size": 397573655
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045734105321729,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250402_TxfTick.parquet",
+        "size": 212279
+      }
+    },
+    "20250411": {
+      "pre_market": {
+        "mtime_ns": 1787107305361398291,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250411_preMarketData.parquet",
+        "size": 773336
+      },
+      "tick_data": {
+        "mtime_ns": 1780038552328384002,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250411_StockTick.parquet",
+        "size": 203366883
+      },
+      "tick_feature": {
+        "mtime_ns": 1783755536025037261,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250411_tickFeature.parquet",
+        "size": 782022014
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045734604316504,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250411_TxfTick.parquet",
+        "size": 656688
+      }
+    },
+    "20250418": {
+      "pre_market": {
+        "mtime_ns": 1787107310405445608,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250418_preMarketData.parquet",
+        "size": 912146
+      },
+      "tick_data": {
+        "mtime_ns": 1780038603150620005,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250418_StockTick.parquet",
+        "size": 95118851
+      },
+      "tick_feature": {
+        "mtime_ns": 1783755620012824495,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250418_tickFeature.parquet",
+        "size": 362169649
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045735044311897,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250418_TxfTick.parquet",
+        "size": 147229
+      }
+    },
+    "20250425": {
+      "pre_market": {
+        "mtime_ns": 1787107315388491992,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250425_preMarketData.parquet",
+        "size": 909225
+      },
+      "tick_data": {
+        "mtime_ns": 1780038644660813478,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250425_StockTick.parquet",
+        "size": 110675068
+      },
+      "tick_feature": {
+        "mtime_ns": 1783755694556489843,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250425_tickFeature.parquet",
+        "size": 428049381
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045735230309953,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250425_TxfTick.parquet",
+        "size": 208695
+      }
+    },
+    "20250505": {
+      "pre_market": {
+        "mtime_ns": 1787107320323537577,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250505_preMarketData.parquet",
+        "size": 970001
+      },
+      "tick_data": {
+        "mtime_ns": 1780038685651005100,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250505_StockTick.parquet",
+        "size": 150194488
+      },
+      "tick_feature": {
+        "mtime_ns": 1783755768603124062,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250505_tickFeature.parquet",
+        "size": 586181173
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045735556306548,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250505_TxfTick.parquet",
+        "size": 415931
+      }
+    },
+    "20250512": {
+      "pre_market": {
+        "mtime_ns": 1787107325185582149,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250512_preMarketData.parquet",
+        "size": 966382
+      },
+      "tick_data": {
+        "mtime_ns": 1780038723058180422,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250512_StockTick.parquet",
+        "size": 108649855
+      },
+      "tick_feature": {
+        "mtime_ns": 1783755832980656654,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250512_tickFeature.parquet",
+        "size": 417030404
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045735951302422,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250512_TxfTick.parquet",
+        "size": 225609
+      }
+    },
+    "20250519": {
+      "pre_market": {
+        "mtime_ns": 1787107330014626091,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250519_preMarketData.parquet",
+        "size": 991418
+      },
+      "tick_data": {
+        "mtime_ns": 1780038771434407726,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250519_StockTick.parquet",
+        "size": 118386152
+      },
+      "tick_feature": {
+        "mtime_ns": 1783755912951297109,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250519_tickFeature.parquet",
+        "size": 461776819
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045736495296751,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250519_TxfTick.parquet",
+        "size": 301293
+      }
+    },
+    "20250526": {
+      "pre_market": {
+        "mtime_ns": 1787107334875669994,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250526_preMarketData.parquet",
+        "size": 951716
+      },
+      "tick_data": {
+        "mtime_ns": 1780038815717616335,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250526_StockTick.parquet",
+        "size": 111654042
+      },
+      "tick_feature": {
+        "mtime_ns": 1783755983288843578,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250526_tickFeature.parquet",
+        "size": 438480549
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045736952291988,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250526_TxfTick.parquet",
+        "size": 235238
+      }
+    },
+    "20250603": {
+      "pre_market": {
+        "mtime_ns": 1787107339663712918,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250603_preMarketData.parquet",
+        "size": 974926
+      },
+      "tick_data": {
+        "mtime_ns": 1780038863793843345,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250603_StockTick.parquet",
+        "size": 120049803
+      },
+      "tick_feature": {
+        "mtime_ns": 1783756065441464695,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250603_tickFeature.parquet",
+        "size": 475103219
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045737425287070,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250603_TxfTick.parquet",
+        "size": 270131
+      }
+    },
+    "20250610": {
+      "pre_market": {
+        "mtime_ns": 1787107344389754976,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250610_preMarketData.parquet",
+        "size": 961969
+      },
+      "tick_data": {
+        "mtime_ns": 1780038914861085025,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250610_StockTick.parquet",
+        "size": 122023757
+      },
+      "tick_feature": {
+        "mtime_ns": 1783756142123030091,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250610_tickFeature.parquet",
+        "size": 478461657
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045737598285271,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250610_TxfTick.parquet",
+        "size": 244291
+      }
+    },
+    "20250617": {
+      "pre_market": {
+        "mtime_ns": 1787107349046796129,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250617_preMarketData.parquet",
+        "size": 982411
+      },
+      "tick_data": {
+        "mtime_ns": 1780038961325305369,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250617_StockTick.parquet",
+        "size": 107502959
+      },
+      "tick_feature": {
+        "mtime_ns": 1783756215635560932,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250617_tickFeature.parquet",
+        "size": 419828028
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045738073280334,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250617_TxfTick.parquet",
+        "size": 342492
+      }
+    },
+    "20250624": {
+      "pre_market": {
+        "mtime_ns": 1787107353754837434,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250624_preMarketData.parquet",
+        "size": 990803
+      },
+      "tick_data": {
+        "mtime_ns": 1780039007993527082,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250624_StockTick.parquet",
+        "size": 121204763
+      },
+      "tick_feature": {
+        "mtime_ns": 1783756286872066300,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250624_tickFeature.parquet",
+        "size": 474059004
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045738489276019,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250624_TxfTick.parquet",
+        "size": 258897
+      }
+    },
+    "20250701": {
+      "pre_market": {
+        "mtime_ns": 1787107358395877863,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250701_preMarketData.parquet",
+        "size": 991448
+      },
+      "tick_data": {
+        "mtime_ns": 1780039058643768107,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250701_StockTick.parquet",
+        "size": 110091410
+      },
+      "tick_feature": {
+        "mtime_ns": 1783756360328579329,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250701_tickFeature.parquet",
+        "size": 431564031
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045738792272877,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250701_TxfTick.parquet",
+        "size": 319246
+      }
+    },
+    "20250708": {
+      "pre_market": {
+        "mtime_ns": 1787107363105918604,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250708_preMarketData.parquet",
+        "size": 984722
+      },
+      "tick_data": {
+        "mtime_ns": 1780039100123965771,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250708_StockTick.parquet",
+        "size": 99989552
+      },
+      "tick_feature": {
+        "mtime_ns": 1783756426521035502,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250708_tickFeature.parquet",
+        "size": 387808791
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045739090269788,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250708_TxfTick.parquet",
+        "size": 243305
+      }
+    },
+    "20250715": {
+      "pre_market": {
+        "mtime_ns": 1787107367800958926,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250715_preMarketData.parquet",
+        "size": 1002218
+      },
+      "tick_data": {
+        "mtime_ns": 1780039146240185789,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250715_StockTick.parquet",
+        "size": 98824891
+      },
+      "tick_feature": {
+        "mtime_ns": 1783756494156496381,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250715_tickFeature.parquet",
+        "size": 384047515
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045739515265390,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250715_TxfTick.parquet",
+        "size": 380460
+      }
+    },
+    "20250722": {
+      "pre_market": {
+        "mtime_ns": 1787107372558999497,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250722_preMarketData.parquet",
+        "size": 1020610
+      },
+      "tick_data": {
+        "mtime_ns": 1780039198126596250,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250722_StockTick.parquet",
+        "size": 129134040
+      },
+      "tick_feature": {
+        "mtime_ns": 1783756561713952087,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250722_tickFeature.parquet",
+        "size": 510132176
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045739884261572,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250722_TxfTick.parquet",
+        "size": 305454
+      }
+    },
+    "20250729": {
+      "pre_market": {
+        "mtime_ns": 1787107377164038488,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250729_preMarketData.parquet",
+        "size": 1033810
+      },
+      "tick_data": {
+        "mtime_ns": 1780039241947199713,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250729_StockTick.parquet",
+        "size": 112552715
+      },
+      "tick_feature": {
+        "mtime_ns": 1783756631308417286,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250729_tickFeature.parquet",
+        "size": 442741876
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045740017260197,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250729_TxfTick.parquet",
+        "size": 284781
+      }
+    },
+    "20250805": {
+      "pre_market": {
+        "mtime_ns": 1787107381972078911,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250805_preMarketData.parquet",
+        "size": 1089271
+      },
+      "tick_data": {
+        "mtime_ns": 1780039285773776512,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250805_StockTick.parquet",
+        "size": 115757655
+      },
+      "tick_feature": {
+        "mtime_ns": 1783756703095893214,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250805_tickFeature.parquet",
+        "size": 453579309
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045740180258514,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250805_TxfTick.parquet",
+        "size": 165750
+      }
+    },
+    "20250812": {
+      "pre_market": {
+        "mtime_ns": 1787107386796119173,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250812_preMarketData.parquet",
+        "size": 1124089
+      },
+      "tick_data": {
+        "mtime_ns": 1780039341242471590,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250812_StockTick.parquet",
+        "size": 131852518
+      },
+      "tick_feature": {
+        "mtime_ns": 1783756778130386960,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250812_tickFeature.parquet",
+        "size": 522029295
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045740846251640,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250812_TxfTick.parquet",
+        "size": 171596
+      }
+    },
+    "20250819": {
+      "pre_market": {
+        "mtime_ns": 1787107391651159402,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250819_preMarketData.parquet",
+        "size": 1132652
+      },
+      "tick_data": {
+        "mtime_ns": 1780039399139159510,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250819_StockTick.parquet",
+        "size": 136167249
+      },
+      "tick_feature": {
+        "mtime_ns": 1783756865374956952,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250819_tickFeature.parquet",
+        "size": 539876812
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045741218247805,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250819_TxfTick.parquet",
+        "size": 216127
+      }
+    },
+    "20250826": {
+      "pre_market": {
+        "mtime_ns": 1787107396506199339,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250826_preMarketData.parquet",
+        "size": 1113353
+      },
+      "tick_data": {
+        "mtime_ns": 1780039445970690655,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250826_StockTick.parquet",
+        "size": 124024466
+      },
+      "tick_feature": {
+        "mtime_ns": 1783756941198449260,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250826_tickFeature.parquet",
+        "size": 485407783
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045741645243409,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250826_TxfTick.parquet",
+        "size": 172278
+      }
+    },
+    "20250902": {
+      "pre_market": {
+        "mtime_ns": 1787107401392239241,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250902_preMarketData.parquet",
+        "size": 1150288
+      },
+      "tick_data": {
+        "mtime_ns": 1780039506611348235,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250902_StockTick.parquet",
+        "size": 133688494
+      },
+      "tick_feature": {
+        "mtime_ns": 1783757028495013068,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250902_tickFeature.parquet",
+        "size": 529893117
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045742048239259,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250902_TxfTick.parquet",
+        "size": 309088
+      }
+    },
+    "20250909": {
+      "pre_market": {
+        "mtime_ns": 1787107406279278861,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250909_preMarketData.parquet",
+        "size": 1135823
+      },
+      "tick_data": {
+        "mtime_ns": 1780039565312955653,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250909_StockTick.parquet",
+        "size": 139809665
+      },
+      "tick_feature": {
+        "mtime_ns": 1783757109753535418,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250909_tickFeature.parquet",
+        "size": 553109714
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045742239237298,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250909_TxfTick.parquet",
+        "size": 186345
+      }
+    },
+    "20250916": {
+      "pre_market": {
+        "mtime_ns": 1787107411134317938,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250916_preMarketData.parquet",
+        "size": 1102969
+      },
+      "tick_data": {
+        "mtime_ns": 1780039621089509141,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250916_StockTick.parquet",
+        "size": 130126994
+      },
+      "tick_feature": {
+        "mtime_ns": 1783757196029087824,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250916_tickFeature.parquet",
+        "size": 514976963
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045742586233733,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250916_TxfTick.parquet",
+        "size": 284674
+      }
+    },
+    "20250923": {
+      "pre_market": {
+        "mtime_ns": 1787107416023357006,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20250923_preMarketData.parquet",
+        "size": 1146331
+      },
+      "tick_data": {
+        "mtime_ns": 1780039675862032558,
+        "path": "/home/kevin/Project/HFT/data/tickData/20250923_StockTick.parquet",
+        "size": 140930263
+      },
+      "tick_feature": {
+        "mtime_ns": 1783757283067643172,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20250923_tickFeature.parquet",
+        "size": 560590370
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045743140228045,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20250923_TxfTick.parquet",
+        "size": 289268
+      }
+    },
+    "20251001": {
+      "pre_market": {
+        "mtime_ns": 1787107420907395751,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20251001_preMarketData.parquet",
+        "size": 1119003
+      },
+      "tick_data": {
+        "mtime_ns": 1780039727612510628,
+        "path": "/home/kevin/Project/HFT/data/tickData/20251001_StockTick.parquet",
+        "size": 119827949
+      },
+      "tick_feature": {
+        "mtime_ns": 1783757368504186695,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20251001_tickFeature.parquet",
+        "size": 479111330
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045743619223136,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20251001_TxfTick.parquet",
+        "size": 327513
+      }
+    },
+    "20251009": {
+      "pre_market": {
+        "mtime_ns": 1787107425846434650,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20251009_preMarketData.parquet",
+        "size": 1151216
+      },
+      "tick_data": {
+        "mtime_ns": 1780039771967908835,
+        "path": "/home/kevin/Project/HFT/data/tickData/20251009_StockTick.parquet",
+        "size": 142980851
+      },
+      "tick_feature": {
+        "mtime_ns": 1783757450734708558,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20251009_tickFeature.parquet",
+        "size": 575819535
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045744117218035,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20251009_TxfTick.parquet",
+        "size": 229568
+      }
+    },
+    "20251017": {
+      "pre_market": {
+        "mtime_ns": 1787107430786473274,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20251017_preMarketData.parquet",
+        "size": 1169544
+      },
+      "tick_data": {
+        "mtime_ns": 1780039823749361483,
+        "path": "/home/kevin/Project/HFT/data/tickData/20251017_StockTick.parquet",
+        "size": 126989685
+      },
+      "tick_feature": {
+        "mtime_ns": 1783757541325282254,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20251017_tickFeature.parquet",
+        "size": 505847473
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045744678212300,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20251017_TxfTick.parquet",
+        "size": 289225
+      }
+    },
+    "20251027": {
+      "pre_market": {
+        "mtime_ns": 1787107435597510622,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20251027_preMarketData.parquet",
+        "size": 1109901
+      },
+      "tick_data": {
+        "mtime_ns": 1780039869403750590,
+        "path": "/home/kevin/Project/HFT/data/tickData/20251027_StockTick.parquet",
+        "size": 135179411
+      },
+      "tick_feature": {
+        "mtime_ns": 1783757623840803866,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20251027_tickFeature.parquet",
+        "size": 532123095
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045745227206693,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20251027_TxfTick.parquet",
+        "size": 200328
+      }
+    },
+    "20251103": {
+      "pre_market": {
+        "mtime_ns": 1787107440438547937,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20251103_preMarketData.parquet",
+        "size": 1169584
+      },
+      "tick_data": {
+        "mtime_ns": 1780039923000196590,
+        "path": "/home/kevin/Project/HFT/data/tickData/20251103_StockTick.parquet",
+        "size": 128318721
+      },
+      "tick_feature": {
+        "mtime_ns": 1783757713581370299,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20251103_tickFeature.parquet",
+        "size": 510838299
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045745645202429,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20251103_TxfTick.parquet",
+        "size": 284570
+      }
+    },
+    "20251110": {
+      "pre_market": {
+        "mtime_ns": 1787107445432586156,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20251110_preMarketData.parquet",
+        "size": 1135777
+      },
+      "tick_data": {
+        "mtime_ns": 1780039974783617454,
+        "path": "/home/kevin/Project/HFT/data/tickData/20251110_StockTick.parquet",
+        "size": 129486924
+      },
+      "tick_feature": {
+        "mtime_ns": 1783757797362898428,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20251110_tickFeature.parquet",
+        "size": 512267751
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045745841200430,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20251110_TxfTick.parquet",
+        "size": 284386
+      }
+    },
+    "20251117": {
+      "pre_market": {
+        "mtime_ns": 1787107450500624658,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20251117_preMarketData.parquet",
+        "size": 1167134
+      },
+      "tick_data": {
+        "mtime_ns": 1780040032356074927,
+        "path": "/home/kevin/Project/HFT/data/tickData/20251117_StockTick.parquet",
+        "size": 139097876
+      },
+      "tick_feature": {
+        "mtime_ns": 1783757892828499535,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20251117_tickFeature.parquet",
+        "size": 556713767
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045746282195940,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20251117_TxfTick.parquet",
+        "size": 384613
+      }
+    },
+    "20251124": {
+      "pre_market": {
+        "mtime_ns": 1787107455494662321,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20251124_preMarketData.parquet",
+        "size": 1135020
+      },
+      "tick_data": {
+        "mtime_ns": 1780040084738482567,
+        "path": "/home/kevin/Project/HFT/data/tickData/20251124_StockTick.parquet",
+        "size": 122698857
+      },
+      "tick_feature": {
+        "mtime_ns": 1783757982237061955,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20251124_tickFeature.parquet",
+        "size": 489835341
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045746822190445,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20251124_TxfTick.parquet",
+        "size": 217890
+      }
+    },
+    "20251201": {
+      "pre_market": {
+        "mtime_ns": 1787107460597700525,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20251201_preMarketData.parquet",
+        "size": 1148247
+      },
+      "tick_data": {
+        "mtime_ns": 1780040132757849783,
+        "path": "/home/kevin/Project/HFT/data/tickData/20251201_StockTick.parquet",
+        "size": 116637467
+      },
+      "tick_feature": {
+        "mtime_ns": 1783758059472547442,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20251201_tickFeature.parquet",
+        "size": 466374147
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045747383184747,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20251201_TxfTick.parquet",
+        "size": 257058
+      }
+    },
+    "20251208": {
+      "pre_market": {
+        "mtime_ns": 1787107465763738914,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20251208_preMarketData.parquet",
+        "size": 1114657
+      },
+      "tick_data": {
+        "mtime_ns": 1780040177850189493,
+        "path": "/home/kevin/Project/HFT/data/tickData/20251208_StockTick.parquet",
+        "size": 113280128
+      },
+      "tick_feature": {
+        "mtime_ns": 1783758134623019549,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20251208_tickFeature.parquet",
+        "size": 448352010
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045747835180160,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20251208_TxfTick.parquet",
+        "size": 195536
+      }
+    },
+    "20251215": {
+      "pre_market": {
+        "mtime_ns": 1787107470855776474,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20251215_preMarketData.parquet",
+        "size": 1141322
+      },
+      "tick_data": {
+        "mtime_ns": 1780040225718545137,
+        "path": "/home/kevin/Project/HFT/data/tickData/20251215_StockTick.parquet",
+        "size": 122431134
+      },
+      "tick_feature": {
+        "mtime_ns": 1783758216030530704,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20251215_tickFeature.parquet",
+        "size": 484667846
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045748350174940,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20251215_TxfTick.parquet",
+        "size": 279953
+      }
+    },
+    "20251222": {
+      "pre_market": {
+        "mtime_ns": 1787107475939813702,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20251222_preMarketData.parquet",
+        "size": 1128833
+      },
+      "tick_data": {
+        "mtime_ns": 1780040280967949875,
+        "path": "/home/kevin/Project/HFT/data/tickData/20251222_StockTick.parquet",
+        "size": 123962074
+      },
+      "tick_feature": {
+        "mtime_ns": 1783758299198052669,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20251222_tickFeature.parquet",
+        "size": 490190475
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045748735171041,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20251222_TxfTick.parquet",
+        "size": 175262
+      }
+    },
+    "20251230": {
+      "pre_market": {
+        "mtime_ns": 1787107481065850962,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20251230_preMarketData.parquet",
+        "size": 1161208
+      },
+      "tick_data": {
+        "mtime_ns": 1780040330384307128,
+        "path": "/home/kevin/Project/HFT/data/tickData/20251230_StockTick.parquet",
+        "size": 129722614
+      },
+      "tick_feature": {
+        "mtime_ns": 1783758377293542615,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20251230_tickFeature.parquet",
+        "size": 518062638
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045749114167206,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20251230_TxfTick.parquet",
+        "size": 192990
+      }
+    },
+    "20260107": {
+      "pre_market": {
+        "mtime_ns": 1787107486144887612,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260107_preMarketData.parquet",
+        "size": 1233655
+      },
+      "tick_data": {
+        "mtime_ns": 1780040392756752316,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260107_StockTick.parquet",
+        "size": 173398414
+      },
+      "tick_feature": {
+        "mtime_ns": 1783758479495183561,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260107_tickFeature.parquet",
+        "size": 700259680
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045749441163903,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260107_TxfTick.parquet",
+        "size": 263055
+      }
+    },
+    "20260114": {
+      "pre_market": {
+        "mtime_ns": 1787107491229924039,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260114_preMarketData.parquet",
+        "size": 1227033
+      },
+      "tick_data": {
+        "mtime_ns": 1780040460112226669,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260114_StockTick.parquet",
+        "size": 163785756
+      },
+      "tick_feature": {
+        "mtime_ns": 1783758588118864542,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260114_tickFeature.parquet",
+        "size": 658766165
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045749881159458,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260114_TxfTick.parquet",
+        "size": 256064
+      }
+    },
+    "20260121": {
+      "pre_market": {
+        "mtime_ns": 1787107496393960763,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260121_preMarketData.parquet",
+        "size": 1254572
+      },
+      "tick_data": {
+        "mtime_ns": 1780040528291700862,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260121_StockTick.parquet",
+        "size": 208972368
+      },
+      "tick_feature": {
+        "mtime_ns": 1783758712472643896,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260121_tickFeature.parquet",
+        "size": 863566413
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045750381154415,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260121_TxfTick.parquet",
+        "size": 516383
+      }
+    },
+    "20260128": {
+      "pre_market": {
+        "mtime_ns": 1787107502156001424,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260128_preMarketData.parquet",
+        "size": 1256566
+      },
+      "tick_data": {
+        "mtime_ns": 1780040609203256882,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260128_StockTick.parquet",
+        "size": 191605493
+      },
+      "tick_feature": {
+        "mtime_ns": 1783758837528427440,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260128_tickFeature.parquet",
+        "size": 780177492
+      },
+      "txf_tick": {
+        "mtime_ns": 1787045763507024179,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260128_TxfTick.parquet",
+        "size": 153447621
+      }
+    },
+    "20260204": {
+      "pre_market": {
+        "mtime_ns": 1787107509048049625,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260204_preMarketData.parquet",
+        "size": 1209762
+      },
+      "tick_data": {
+        "mtime_ns": 1780040690326808056,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260204_StockTick.parquet",
+        "size": 156894538
+      },
+      "tick_feature": {
+        "mtime_ns": 1783758969246252551,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260204_tickFeature.parquet",
+        "size": 640331489
+      },
+      "txf_tick": {
+        "mtime_ns": 1780041802617260554,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260204_TxfTick.parquet",
+        "size": 122519409
+      }
+    },
+    "20260211": {
+      "pre_market": {
+        "mtime_ns": 1787107515303092965,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260211_preMarketData.parquet",
+        "size": 1159106
+      },
+      "tick_data": {
+        "mtime_ns": 1780040750009210051,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260211_StockTick.parquet",
+        "size": 153261391
+      },
+      "tick_feature": {
+        "mtime_ns": 1783759077406929987,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260211_tickFeature.parquet",
+        "size": 623902905
+      },
+      "txf_tick": {
+        "mtime_ns": 1780041865995613891,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260211_TxfTick.parquet",
+        "size": 85196798
+      }
+    },
+    "20260302": {
+      "pre_market": {
+        "mtime_ns": 1787107521174133300,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260302_preMarketData.parquet",
+        "size": 1266700
+      },
+      "tick_data": {
+        "mtime_ns": 1780040821770689938,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260302_StockTick.parquet",
+        "size": 204547858
+      },
+      "tick_feature": {
+        "mtime_ns": 1783759209873759556,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260302_tickFeature.parquet",
+        "size": 839601315
+      },
+      "txf_tick": {
+        "mtime_ns": 1780041922471932122,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260302_TxfTick.parquet",
+        "size": 240569822
+      }
+    },
+    "20260309": {
+      "pre_market": {
+        "mtime_ns": 1787107528582183723,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260309_preMarketData.parquet",
+        "size": 1176821
+      },
+      "tick_data": {
+        "mtime_ns": 1780040900878215207,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260309_StockTick.parquet",
+        "size": 184479230
+      },
+      "tick_feature": {
+        "mtime_ns": 1783759347961624234,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260309_tickFeature.parquet",
+        "size": 725613274
+      },
+      "txf_tick": {
+        "mtime_ns": 1780042063959741234,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260309_TxfTick.parquet",
+        "size": 242518562
+      }
+    },
+    "20260316": {
+      "pre_market": {
+        "mtime_ns": 1787107535103227680,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260316_preMarketData.parquet",
+        "size": 1176885
+      },
+      "tick_data": {
+        "mtime_ns": 1780040961183613357,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260316_StockTick.parquet",
+        "size": 174036382
+      },
+      "tick_feature": {
+        "mtime_ns": 1783759462691302108,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260316_tickFeature.parquet",
+        "size": 706442232
+      },
+      "txf_tick": {
+        "mtime_ns": 1780042150874245260,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260316_TxfTick.parquet",
+        "size": 181729085
+      }
+    },
+    "20260323": {
+      "pre_market": {
+        "mtime_ns": 1787107541173268238,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260323_preMarketData.parquet",
+        "size": 1198002
+      },
+      "tick_data": {
+        "mtime_ns": 1780041038433120796,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260323_StockTick.parquet",
+        "size": 174435932
+      },
+      "tick_feature": {
+        "mtime_ns": 1783759589327506470,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260323_tickFeature.parquet",
+        "size": 698534037
+      },
+      "txf_tick": {
+        "mtime_ns": 1780042208191580093,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260323_TxfTick.parquet",
+        "size": 214359021
+      }
+    },
+    "20260330": {
+      "pre_market": {
+        "mtime_ns": 1787107547519310277,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260330_preMarketData.parquet",
+        "size": 1146855
+      },
+      "tick_data": {
+        "mtime_ns": 1780041103305545013,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260330_StockTick.parquet",
+        "size": 163449496
+      },
+      "tick_feature": {
+        "mtime_ns": 1783759700997778328,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260330_tickFeature.parquet",
+        "size": 659947994
+      },
+      "txf_tick": {
+        "mtime_ns": 1780042286728041557,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260330_TxfTick.parquet",
+        "size": 192810477
+      }
+    },
+    "20260408": {
+      "pre_market": {
+        "mtime_ns": 1787107553701350878,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260408_preMarketData.parquet",
+        "size": 1124603
+      },
+      "tick_data": {
+        "mtime_ns": 1780041165907952906,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260408_StockTick.parquet",
+        "size": 163249662
+      },
+      "tick_feature": {
+        "mtime_ns": 1783759808115103500,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260408_tickFeature.parquet",
+        "size": 663295222
+      },
+      "txf_tick": {
+        "mtime_ns": 1780042348634407227,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260408_TxfTick.parquet",
+        "size": 119611273
+      }
+    },
+    "20260415": {
+      "pre_market": {
+        "mtime_ns": 1787107559237386944,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260415_preMarketData.parquet",
+        "size": 1229420
+      },
+      "tick_data": {
+        "mtime_ns": 1780041246024437156,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260415_StockTick.parquet",
+        "size": 195930249
+      },
+      "tick_feature": {
+        "mtime_ns": 1783759937982565153,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260415_tickFeature.parquet",
+        "size": 802556045
+      },
+      "txf_tick": {
+        "mtime_ns": 1780042382484607800,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260415_TxfTick.parquet",
+        "size": 89888619
+      }
+    },
+    "20260422": {
+      "pre_market": {
+        "mtime_ns": 1787107564797422892,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260422_preMarketData.parquet",
+        "size": 1249515
+      },
+      "tick_data": {
+        "mtime_ns": 1780041312204735558,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260422_StockTick.parquet",
+        "size": 195088850
+      },
+      "tick_feature": {
+        "mtime_ns": 1783760070675096894,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260422_tickFeature.parquet",
+        "size": 788277104
+      },
+      "txf_tick": {
+        "mtime_ns": 1780042426973872054,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260422_TxfTick.parquet",
+        "size": 118517685
+      }
+    },
+    "20260429": {
+      "pre_market": {
+        "mtime_ns": 1787107570894461998,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260429_preMarketData.parquet",
+        "size": 1184685
+      },
+      "tick_data": {
+        "mtime_ns": 1780041394394123945,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260429_StockTick.parquet",
+        "size": 174431940
+      },
+      "tick_feature": {
+        "mtime_ns": 1783760214792727206,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260429_tickFeature.parquet",
+        "size": 709874484
+      },
+      "txf_tick": {
+        "mtime_ns": 1780042515680400883,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260429_TxfTick.parquet",
+        "size": 170809269
+      }
+    },
+    "20260507": {
+      "pre_market": {
+        "mtime_ns": 1787107576802499583,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260507_preMarketData.parquet",
+        "size": 1252876
+      },
+      "tick_data": {
+        "mtime_ns": 1780041461894455734,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260507_StockTick.parquet",
+        "size": 211373822
+      },
+      "tick_feature": {
+        "mtime_ns": 1783760349761355607,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260507_tickFeature.parquet",
+        "size": 872574265
+      },
+      "txf_tick": {
+        "mtime_ns": 1780042598203894831,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260507_TxfTick.parquet",
+        "size": 169962236
+      }
+    },
+    "20260514": {
+      "pre_market": {
+        "mtime_ns": 1787107582607536220,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260514_preMarketData.parquet",
+        "size": 1213267
+      },
+      "tick_data": {
+        "mtime_ns": 1780041556726938583,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260514_StockTick.parquet",
+        "size": 218594243
+      },
+      "tick_feature": {
+        "mtime_ns": 1783760501890097279,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260514_tickFeature.parquet",
+        "size": 900823108
+      },
+      "txf_tick": {
+        "mtime_ns": 1780042672416340448,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260514_TxfTick.parquet",
+        "size": 196660533
+      }
+    },
+    "20260521": {
+      "pre_market": {
+        "mtime_ns": 1787107588574573581,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260521_preMarketData.parquet",
+        "size": 1183832
+      },
+      "tick_data": {
+        "mtime_ns": 1780041637084360742,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260521_StockTick.parquet",
+        "size": 188496980
+      },
+      "tick_feature": {
+        "mtime_ns": 1783760644928819022,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260521_tickFeature.parquet",
+        "size": 772103547
+      },
+      "txf_tick": {
+        "mtime_ns": 1780042750900812953,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260521_TxfTick.parquet",
+        "size": 121574384
+      }
+    },
+    "20260528": {
+      "pre_market": {
+        "mtime_ns": 1787107594305609183,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260528_preMarketData.parquet",
+        "size": 1260574
+      },
+      "tick_data": {
+        "mtime_ns": 1780041741321923163,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260528_StockTick.parquet",
+        "size": 284088806
+      },
+      "tick_feature": {
+        "mtime_ns": 1783760817635713695,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260528_tickFeature.parquet",
+        "size": 1191113024
+      },
+      "txf_tick": {
+        "mtime_ns": 1780042826360268251,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260528_TxfTick.parquet",
+        "size": 322309884
+      }
+    },
+    "20260604": {
+      "pre_market": {
+        "mtime_ns": 1787107600473647194,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260604_preMarketData.parquet",
+        "size": 1250569
+      },
+      "tick_data": {
+        "mtime_ns": 1780640134023757123,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260604_StockTick.parquet",
+        "size": 245371229
+      },
+      "tick_feature": {
+        "mtime_ns": 1783760995007651777,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260604_tickFeature.parquet",
+        "size": 1018587786
+      },
+      "txf_tick": {
+        "mtime_ns": 1780640185069515715,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260604_TxfTick.parquet",
+        "size": 187460031
+      }
+    },
+    "20260611": {
+      "pre_market": {
+        "mtime_ns": 1787107606737685477,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260611_preMarketData.parquet",
+        "size": 1222511
+      },
+      "tick_data": {
+        "mtime_ns": 1781253030168279377,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260611_StockTick.parquet",
+        "size": 261661436
+      },
+      "tick_feature": {
+        "mtime_ns": 1783761168650583541,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260611_tickFeature.parquet",
+        "size": 1091450274
+      },
+      "txf_tick": {
+        "mtime_ns": 1781253070992546492,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260611_TxfTick.parquet",
+        "size": 350880292
+      }
+    },
+    "20260618": {
+      "pre_market": {
+        "mtime_ns": 1787107612817722330,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260618_preMarketData.parquet",
+        "size": 1294468
+      },
+      "tick_data": {
+        "mtime_ns": 1782108915551057736,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260618_StockTick.parquet",
+        "size": 218470342
+      },
+      "tick_feature": {
+        "mtime_ns": 1783761310853353755,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260618_tickFeature.parquet",
+        "size": 907145688
+      },
+      "txf_tick": {
+        "mtime_ns": 1782108937116564429,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260618_TxfTick.parquet",
+        "size": 177388604
+      }
+    },
+    "20260626": {
+      "pre_market": {
+        "mtime_ns": 1787107619060759861,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260626_preMarketData.parquet",
+        "size": 1184027
+      },
+      "tick_data": {
+        "mtime_ns": 1782716252290446256,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260626_StockTick.parquet",
+        "size": 261448249
+      },
+      "tick_feature": {
+        "mtime_ns": 1783761488555322810,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260626_tickFeature.parquet",
+        "size": 1089306899
+      },
+      "txf_tick": {
+        "mtime_ns": 1782716300966677893,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260626_TxfTick.parquet",
+        "size": 334657454
+      }
+    },
+    "20260703": {
+      "pre_market": {
+        "mtime_ns": 1787107625207796515,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260703_preMarketData.parquet",
+        "size": 1191446
+      },
+      "tick_data": {
+        "mtime_ns": 1783319116351858971,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260703_StockTick.parquet",
+        "size": 220275334
+      },
+      "tick_feature": {
+        "mtime_ns": 1783761642457140759,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260703_tickFeature.parquet",
+        "size": 905075275
+      },
+      "txf_tick": {
+        "mtime_ns": 1783319139909705917,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260703_TxfTick.parquet",
+        "size": 193148270
+      }
+    },
+    "20260713": {
+      "pre_market": {
+        "mtime_ns": 1787107632429839201,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260713_preMarketData.parquet",
+        "size": 1155042
+      },
+      "tick_data": {
+        "mtime_ns": 1784010314664314169,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260713_StockTick.parquet",
+        "size": 203953804
+      },
+      "tick_feature": {
+        "mtime_ns": 1784010396939870079,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260713_tickFeature.parquet",
+        "size": 840113723
+      },
+      "txf_tick": {
+        "mtime_ns": 1784010343748511466,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260713_TxfTick.parquet",
+        "size": 292417297
+      }
+    },
+    "20260720": {
+      "pre_market": {
+        "mtime_ns": 1787107638564875147,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260720_preMarketData.parquet",
+        "size": 1129949
+      },
+      "tick_data": {
+        "mtime_ns": 1784615119571561343,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260720_StockTick.parquet",
+        "size": 253767669
+      },
+      "tick_feature": {
+        "mtime_ns": 1784615190392405387,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260720_tickFeature.parquet",
+        "size": 1049008630
+      },
+      "txf_tick": {
+        "mtime_ns": 1784615150581490817,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260720_TxfTick.parquet",
+        "size": 472801677
+      }
+    },
+    "20260727": {
+      "pre_market": {
+        "mtime_ns": 1787107644999912543,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260727_preMarketData.parquet",
+        "size": 1087077
+      },
+      "tick_data": {
+        "mtime_ns": 1785219914657364183,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260727_StockTick.parquet",
+        "size": 202985674
+      },
+      "tick_feature": {
+        "mtime_ns": 1785219987261061168,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260727_tickFeature.parquet",
+        "size": 827411683
+      },
+      "txf_tick": {
+        "mtime_ns": 1785219940804621151,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260727_TxfTick.parquet",
+        "size": 323558363
+      }
+    },
+    "20260803": {
+      "pre_market": {
+        "mtime_ns": 1787107652281954483,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260803_preMarketData.parquet",
+        "size": 1069161
+      },
+      "tick_data": {
+        "mtime_ns": 1785824713548709396,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260803_StockTick.parquet",
+        "size": 176325097
+      },
+      "tick_feature": {
+        "mtime_ns": 1785824785349150161,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260803_tickFeature.parquet",
+        "size": 719773906
+      },
+      "txf_tick": {
+        "mtime_ns": 1785824741884478583,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260803_TxfTick.parquet",
+        "size": 279960625
+      }
+    },
+    "20260810": {
+      "pre_market": {
+        "mtime_ns": 1787107658543990235,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260810_preMarketData.parquet",
+        "size": 1092736
+      },
+      "tick_data": {
+        "mtime_ns": 1786429512350142026,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260810_StockTick.parquet",
+        "size": 174852675
+      },
+      "tick_feature": {
+        "mtime_ns": 1786429564256943502,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260810_tickFeature.parquet",
+        "size": 716648319
+      },
+      "txf_tick": {
+        "mtime_ns": 1786429529605072398,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260810_TxfTick.parquet",
+        "size": 150600455
+      }
+    },
+    "20260817": {
+      "pre_market": {
+        "mtime_ns": 1787107664167022093,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260817_preMarketData.parquet",
+        "size": 1127661
+      },
+      "tick_data": {
+        "mtime_ns": 1787034314032861171,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260817_StockTick.parquet",
+        "size": 183167765
+      },
+      "tick_feature": {
+        "mtime_ns": 1787034365714713339,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260817_tickFeature.parquet",
+        "size": 750390811
+      },
+      "txf_tick": {
+        "mtime_ns": 1787034329699814973,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260817_TxfTick.parquet",
+        "size": 110481032
+      }
+    },
+    "20260824": {
+      "pre_market": {
+        "mtime_ns": 1787733656708110784,
+        "path": "/home/kevin/Project/HFT/data/preMarket/20260824_preMarketData.parquet",
+        "size": 1141161
+      },
+      "tick_data": {
+        "mtime_ns": 1787733021463021620,
+        "path": "/home/kevin/Project/HFT/data/tickData/20260824_StockTick.parquet",
+        "size": 166045231
+      },
+      "tick_feature": {
+        "mtime_ns": 1787733414948649686,
+        "path": "/home/kevin/Project/HFT/data/tickFeature/20260824_tickFeature.parquet",
+        "size": 684100386
+      },
+      "txf_tick": {
+        "mtime_ns": 1787733110154042903,
+        "path": "/home/kevin/Project/HFT/data/txfTickData/20260824_TxfTick.parquet",
+        "size": 180547115
+      }
+    }
+  },
+  "source_identity": {
+    "column": "source_identities_json",
+    "fields": [
+      "path",
+      "size",
+      "mtime_ns"
+    ],
+    "sources": [
+      "tick_data",
+      "tick_feature",
+      "pre_market",
+      "txf_tick"
+    ]
+  },
+  "start": "20250211",
+  "step": 5,
+  "stock_time_bucket": "5m",
+  "stock_time_equal_metric": "stock_time_equal_delta_z",
+  "stock_time_equal_weighting": "condition-minus-pool mean z within QuoteCode/time bucket; equal active buckets within QuoteCode, then equal active QuoteCode"
+}
