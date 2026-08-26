@@ -1,193 +1,398 @@
+"""Reference CLI for the generic condition-study framework.
+
+negFill is a calibration event, not a framework primitive.  This adapter pins
+the historical Taiwan-equity eligibility coordinates and label profiles while
+the core comparison guarantees that condition and control come from one
+eligible, label-valid population.
 """
-condition_benchmark.py
-======================
-Condition 驗收儀表板：評估「事件條件」作為樣本過濾器的水平。
 
-比較對象：條件事件樣本（--events-dir 的 merged per-day parquet）
-          vs 同一組靜態濾網下的全 tick 流均勻抽樣（baseline）。
-兩邊套同一組濾網（可當沖、day_amount_rank<=150、09:00:30-12:30、
-TrialMatch==0、ToRef in (-1.5%, 5%)、|label|<10000），差異即條件本身的切割力。
+from __future__ import annotations
 
-label 規則（--side）：
-  short：taker sell 進場在 B1；FutureHigh > Ref*1.08 觸「停損」→ 出場 Ref*1.08 + TickSize*2（不利滑價）
-  long ：taker buy  進場在 A1；FutureHigh > Ref*1.09 觸「停利」→ 出場 Ref*1.09
-residual：空方 (raw + β·txf_bp)/vol、多方 (raw − β·txf_bp)/vol。
-架構決策：停損停利只改 label 出場價；vol、β、txf return 維持原估計（13:30 horizon），
-不做停損條件下的重估——已知近似（停損事件最適對沖 k≈0.12），換取 hedge 腿嚴格 ex-ante。
-
-指標（negFill 2025-02~2026-08 基準值見 SKILL.md §0.1）：
-  A. 選擇率、樣本/日、cv
-  B. 切割力 Δz（必須用 residual z 口徑；raw 口徑會把市場方向誤計成條件功勞）
-     + 日級 t-stat、正 Δz 日比例、月度序列、市場搭車成分（Δhedge）
-  C. 均勻度：對 tick 流的 TV 距離（時段 / ToRef / 聯合）
-
-Usage:
-    uv run python src/research/timeSeries/condition_benchmark.py \
-        --start 20250211 --end 20260817 --step 3 --sample 25000
-"""
 import argparse
 import datetime as dt
-import sys
 from pathlib import Path
 
 import numpy as np
 import polars as pl
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-sys.path.append(str(PROJECT_ROOT))
+from src.dataloader.txfDataLoader import TxfDataLoader
+from src.research.timeSeries.framework.condition_study import (
+    ConditionComparisonSpec,
+    EligiblePoolSpec,
+    PrimaryEstimand,
+    build_eligible_labeled_pool,
+    compare_condition_to_control,
+    read_day_event_keys,
+    summarize_condition_day,
+)
+from src.research.timeSeries.framework.events import DataRoots
+from src.research.timeSeries.framework.labels import DirectionalLabelSpec
+from src.research.timeSeries.framework.profiles.benchmark import LONG_TAKER_TP109_V1
+from src.research.timeSeries.framework.profiles.fhl import LONG_MAKER_TP109_V1
+from src.research.timeSeries.framework.profiles.negfill import SHORT_TAKER_STOP108_V1
 
-from src.dataloader.txfDataLoader import TxfDataLoader, attach_txf_to_1330_return  # noqa: E402
-from src.features.market_beta import add_txf_event_residual_vol  # noqa: E402
+
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+DEFAULT_EVENT_INDEX = Path(__file__).with_name("data_index.parquet")
 
 T_EDGES = [3300.0, 6900.0, 10500.0, 14100.0]
-T_LABEL = {'1': '11:30-12:30', '2': '10:30-11:30', '3': '09:30-10:30', '4': '09:00-09:30'}
+T_LABEL = {
+    "1": "11:30-12:30",
+    "2": "10:30-11:30",
+    "3": "09:30-10:30",
+    "4": "09:00-09:30",
+}
 R_EDGES = [-0.005, 0.0, 0.01, 0.02, 0.03]
-R_LABEL = {'0': '-1.5~-0.5', '1': '-0.5~0', '2': '0~1', '3': '1~2', '4': '2~3', '5': '3~5'}
+R_LABEL = {
+    "0": "-1.5~-0.5",
+    "1": "-0.5~0",
+    "2": "0~1",
+    "3": "1~2",
+    "4": "2~3",
+    "5": "3~5",
+}
+
+LABEL_PROFILES: dict[str, DirectionalLabelSpec] = {
+    "short-taker-stop108-v1": SHORT_TAKER_STOP108_V1,
+    "long-taker-tp109-v1": LONG_TAKER_TP109_V1,
+    "long-maker-tp109-v1": LONG_MAKER_TP109_V1,
+}
+LEGACY_SIDE_PROFILE = {
+    "short": "short-taker-stop108-v1",
+    "long": "long-taker-tp109-v1",
+}
 
 
-def tick_size(p):
-    return (pl.when(p < 10).then(0.01).when(p < 50).then(0.05).when(p < 100).then(0.1)
-              .when(p < 500).then(0.5).when(p < 1000).then(1.0).otherwise(5.0))
-
-
-def raw_label(side):
-    if side == 'short':
-        entry = pl.col('BidPrice1')
-        exit_ = (pl.when(pl.col('FutureHigh') > pl.col('RefPrice') * 1.08)
-                   .then(pl.col('RefPrice') * 1.08 + pl.col('TickSize') * 2)
-                   .otherwise(pl.col('Close')))
-        return (entry - exit_) / entry * 1e4
-    entry = pl.col('AskPrice1')
-    exit_ = (pl.when(pl.col('FutureHigh') > pl.col('RefPrice') * 1.09)
-               .then(pl.col('RefPrice') * 1.09)
-               .otherwise(pl.col('Close')))
-    return (exit_ - entry) / entry * 1e4
-
-
-def enrich(df, side):
-    sgn = 1.0 if side == 'short' else -1.0
-    df = df.with_columns(
-        raw_label(side).alias('raw'),
-        ((pl.lit(dt.time(13, 25)) - pl.col('TransTime').dt.time()).dt.total_seconds()).alias('sec1325'),
-    ).filter(pl.col('raw').abs() < 10000)
-    return df.with_columns(
-        (pl.col('txf_beta_60d') * pl.col('txf_to_1330_bp')).alias('hedge'),
-        (pl.col('txf_residual_vol_to_1330') * 1e4).alias('volbp'),
-    ).with_columns(
-        ((pl.col('raw') + sgn * pl.col('hedge')) / pl.col('volbp')).alias('z'),
-        (pl.col('raw') + sgn * pl.col('hedge')).alias('resbp'),
-        pl.col('sec1325').cut(T_EDGES, labels=[str(i) for i in range(5)]).alias('tb'),
-        pl.col('ToRef2').cut(R_EDGES, labels=[str(i) for i in range(6)]).alias('rb'),
+def tick_size(price: pl.Expr) -> pl.Expr:
+    return (
+        pl.when(price < 10)
+        .then(0.01)
+        .when(price < 50)
+        .then(0.05)
+        .when(price < 100)
+        .then(0.1)
+        .when(price < 500)
+        .then(0.5)
+        .when(price < 1000)
+        .then(1.0)
+        .otherwise(5.0)
     )
 
 
-def aggregate(df, side, date, n_pool):
-    zok = df.filter(pl.col('z').is_finite())
-    grid = df.group_by('tb', 'rb').len().to_dicts()
-    return {
-        'Date': date, 'side': side, 'n_pool': n_pool, 'n': len(df), 'n_z': len(zok),
-        's_raw': df['raw'].sum(), 's_hedge': zok['hedge'].sum(), 's_res': zok['resbp'].sum(),
-        's_z': zok['z'].sum(), 's_z2': (zok['z'] ** 2).sum(),
-        'grid': {f"{g['tb']}_{g['rb']}": g['len'] for g in grid},
-    }
+def _reference_pool_transform(entry_col: str):
+    def transform(frame):
+        bid_to_ref = (
+            (pl.col("BidPrice1") - pl.col("RefPrice")) / pl.col("RefPrice")
+        ).round(6)
+        seconds_to_1325 = (
+            pl.lit(dt.time(13, 25)) - pl.col("TransTime").dt.time()
+        ).dt.total_seconds()
+        return (
+            frame.filter(
+                (pl.col(entry_col) > 0)
+                & (pl.col("RefPrice") > 0)
+                & (pl.col("TrialMatch") == 0)
+                & (pl.col("TransTime").dt.time() > dt.time(9, 0, 30))
+                & (pl.col("TransTime").dt.time() < dt.time(12, 30))
+                & (pl.col("nextday_allow_day_trade_mark") == "X")
+                & (pl.col("day_amount_rank") <= 150)
+            )
+            .with_columns(
+                tick_size(pl.col("BidPrice1")).alias("TickSize"),
+                bid_to_ref.alias("bid_to_ref"),
+                seconds_to_1325.alias("seconds_to_1325"),
+            )
+            .filter(
+                (pl.col("bid_to_ref") > -0.015)
+                & (pl.col("bid_to_ref") < 0.05)
+            )
+            .with_columns(
+                pl.col("seconds_to_1325")
+                .cut(T_EDGES, labels=[str(i) for i in range(5)])
+                .alias("legacy_time_bucket_1325_v1"),
+                pl.col("bid_to_ref")
+                .cut(R_EDGES, labels=[str(i) for i in range(6)])
+                .alias("bid_to_ref_bucket_v1"),
+            )
+        )
+
+    return transform
 
 
-def scan(events_dir, start, end, step, sample, side):
-    entry_col = 'BidPrice1' if side == 'short' else 'AskPrice1'
-    loader = TxfDataLoader(PROJECT_ROOT / 'data/txfTickData')
-    days = sorted(f.stem for f in Path(events_dir).glob('*.parquet') if start <= f.stem <= end)[::step]
-    rows = []
-    for i, d in enumerate(days):
+def _raw_quality_filter(frame):
+    return frame.filter(
+        pl.col("label_raw_bp").is_finite()
+        & (pl.col("label_raw_bp").abs() < 10_000)
+    )
+
+
+def reference_pool_spec(label_spec: DirectionalLabelSpec) -> EligiblePoolSpec:
+    """Pinned eligibility contract used to calibrate the negFill reference."""
+
+    return EligiblePoolSpec(
+        pool_id="tw_equity_daytrade_rank150_090030_123000_bidref_v1",
+        pool_version="1",
+        tick_columns=(
+            "QuoteCode",
+            "ChannelSeq",
+            "TransTime",
+            "BidPrice1",
+            "AskPrice1",
+            "Close",
+            "FutureHigh",
+            "RefPrice",
+            "TrialMatch",
+        ),
+        pre_market_columns=(
+            "QuoteCode",
+            "day_amount_rank",
+            "nextday_allow_day_trade_mark",
+            "txf_beta_60d",
+            "txf_residual_vol_0900_1330_60d",
+        ),
+        transform_and_filter=_reference_pool_transform(
+            label_spec.entry.price_col
+        ),
+        post_label_filter=_raw_quality_filter,
+    )
+
+
+def _study_dates(
+    *,
+    event_index: Path | str | None,
+    events_dir: Path | str | None,
+    start: str,
+    end: str,
+    step: int,
+) -> list[str]:
+    if events_dir is not None:
+        dates = sorted(
+            path.stem
+            for path in Path(events_dir).glob("*.parquet")
+            if start <= path.stem <= end
+        )
+    else:
+        if event_index is None:
+            raise ValueError("event_index is required when events_dir is absent")
+        path = Path(event_index)
+        if not path.exists():
+            raise FileNotFoundError(path)
+        all_dates = (
+            pl.read_parquet(path, columns=["Date"])["Date"]
+            .cast(pl.String)
+            .unique()
+            .sort()
+            .to_list()
+        )
+        dates = [date for date in all_dates if start <= date <= end]
+    if step < 1:
+        raise ValueError("step must be positive")
+    return dates[::step]
+
+
+def scan(
+    events_dir: Path | str | None,
+    start: str,
+    end: str,
+    step: int,
+    sample: int,
+    side: str = "short",
+    *,
+    event_index: Path | str | None = None,
+    label_profile: str | None = None,
+    fail_fast: bool = True,
+) -> list[dict[str, object]]:
+    """Run the negFill reference study through generic shared-pool contracts."""
+
+    profile_name = label_profile or LEGACY_SIDE_PROFILE[side]
+    profile = LABEL_PROFILES[profile_name]
+    roots = DataRoots.from_project_root(PROJECT_ROOT)
+    loader = TxfDataLoader(roots.txf_tick_dir)
+    pool_spec = reference_pool_spec(profile)
+    comparison_spec = ConditionComparisonSpec(
+        condition_id="negfill_reference",
+        condition_version="shared_valid_pool_v2",
+        control_sample_size=sample,
+        control_population="eligible_pool",
+        primary_estimand=PrimaryEstimand.SHARED_POOL,
+        bucket_columns=(
+            "legacy_time_bucket_1325_v1",
+            "bid_to_ref_bucket_v1",
+        ),
+    )
+    dates = _study_dates(
+        event_index=event_index,
+        events_dir=events_dir,
+        start=start,
+        end=end,
+        step=step,
+    )
+    rows: list[dict[str, object]] = []
+    for index, date in enumerate(dates):
         try:
-            ev = pl.scan_parquet(Path(events_dir) / f'{d}.parquet').select(
-                'TransTime', 'QuoteCode', 'BidPrice1', 'AskPrice1', 'Close', 'FutureHigh', 'RefPrice', 'TickSize',
-                'TrialMatch', 'day_amount_rank', 'txf_beta_60d', 'txf_to_1330_bp', 'txf_residual_vol_to_1330',
-            ).filter(
-                (pl.col(entry_col) > 0) & (pl.col('TrialMatch') == 0)
-                & (pl.col('TransTime').dt.time() > dt.time(9, 0, 30))
-                & (pl.col('TransTime').dt.time() < dt.time(12, 30))
-                & (pl.col('day_amount_rank') <= 150)
-            ).with_columns(((pl.col('BidPrice1') - pl.col('RefPrice')) / pl.col('RefPrice')).round(6).alias('ToRef2')
-            ).filter((pl.col('ToRef2') > -0.015) & (pl.col('ToRef2') < 0.05)).collect()
-            rows.append(aggregate(enrich(ev, side), 'condition', d, len(ev)))
-
-            pm = pl.scan_parquet(PROJECT_ROOT / f'data/preMarket/{d}_preMarketData.parquet').select(
-                'QuoteCode', 'day_amount_rank', 'nextday_allow_day_trade_mark',
-                'txf_beta_60d', 'txf_residual_vol_0900_1330_60d')
-            base = pl.scan_parquet(PROJECT_ROOT / f'data/tickData/{d}_StockTick.parquet').select(
-                'TransTime', 'QuoteCode', 'BidPrice1', 'AskPrice1', 'Close', 'FutureHigh', 'RefPrice', 'TrialMatch'
-            ).filter(
-                (pl.col(entry_col) > 0) & (pl.col('TrialMatch') == 0)
-                & (pl.col('TransTime').dt.time() > dt.time(9, 0, 30))
-                & (pl.col('TransTime').dt.time() < dt.time(12, 30))
-            ).join(pm, on='QuoteCode', how='inner').filter(
-                (pl.col('nextday_allow_day_trade_mark') == 'X') & (pl.col('day_amount_rank') <= 150)
-            ).with_columns(((pl.col('BidPrice1') - pl.col('RefPrice')) / pl.col('RefPrice')).round(6).alias('ToRef2')
-            ).filter((pl.col('ToRef2') > -0.015) & (pl.col('ToRef2') < 0.05)).collect()
-            if base.is_empty():
-                continue
-            n_pool = len(base)
-            base = base.sample(n=min(sample, n_pool), seed=int(d))
-            base = base.with_columns(tick_size(pl.col('BidPrice1')).alias('TickSize')).sort('TransTime')
-            base = add_txf_event_residual_vol(attach_txf_to_1330_return(base, d, loader))
-            rows.append(aggregate(enrich(base, side), 'baseline', d, n_pool))
-            if i % 20 == 0:
-                print(f'[{i + 1}/{len(days)}] {d}', flush=True)
-        except Exception as e:  # noqa: BLE001
-            print(f'{d}: ERROR {e}', flush=True)
+            pool = build_eligible_labeled_pool(
+                date,
+                roots=roots,
+                pool_spec=pool_spec,
+                label_spec=profile,
+                txf_loader=loader,
+            )
+            keys = read_day_event_keys(
+                date,
+                event_index_path=(event_index if events_dir is None else None),
+                events_dir=events_dir,
+            )
+            result = compare_condition_to_control(
+                date,
+                pool,
+                keys,
+                spec=comparison_spec,
+                seed=int(date),
+            )
+            day_rows = summarize_condition_day(
+                result, bucket_columns=comparison_spec.bucket_columns
+            )
+            for row in day_rows:
+                row["label_profile_id"] = profile.profile_id
+                row["label_profile_hash"] = profile.stable_hash()
+                row["pool_id"] = pool_spec.pool_id
+                row["study_version"] = comparison_spec.condition_version
+                rows.append(row)
+            if index % 20 == 0:
+                print(
+                    f"[{index + 1}/{len(dates)}] {date}: "
+                    f"condition={result.condition_rows:,}, "
+                    f"pool={result.eligible_pool_rows:,}",
+                    flush=True,
+                )
+        except Exception as exc:
+            if fail_fast:
+                raise RuntimeError(f"{date}: condition study failed") from exc
+            print(f"{date}: ERROR {exc}", flush=True)
     return rows
 
 
-def report(rows):
+def report(rows: list[dict[str, object]]) -> None:
     import pandas as pd
-    df = pd.DataFrame(rows)
-    df['ym'] = df.Date.str[:6]
-    piv = df.pivot_table(index='Date', columns='side', values='n_pool')
-    sel = piv['condition'] / piv['baseline'] * 100
-    nn = df[df.side == 'condition'].n_pool
-    print(f"\n[A] 選擇率 median {sel.median():.2f}% (p10-p90 {sel.quantile(.1):.2f}~{sel.quantile(.9):.2f}%) | "
-          f"樣本/日 mean {nn.mean():,.0f} cv {nn.std() / nn.mean():.2f}")
+
+    if not rows:
+        raise ValueError("condition study produced no rows")
+    frame = pd.DataFrame(rows)
+    frame["ym"] = frame.Date.str[:6]
+    condition = frame[frame.cohort == "condition"]
+    control = frame[frame.cohort == "control"]
+    selection = condition.set_index("Date").n / condition.set_index(
+        "Date"
+    ).n_eligible_pool
+    daily_n = condition.n
+    profile = frame.label_profile_id.iloc[0]
+    study_version = frame.study_version.iloc[0]
+    print(f"\nprofile={profile} | study={study_version}")
+    print(
+        f"[A] 選擇率 median {selection.median() * 100:.2f}% "
+        f"(p10-p90 {selection.quantile(.1) * 100:.2f}~"
+        f"{selection.quantile(.9) * 100:.2f}%) | "
+        f"樣本/日 mean {daily_n.mean():,.0f} "
+        f"cv {daily_n.std() / daily_n.mean():.2f}"
+    )
 
     def pooled(sub):
-        zm = sub.s_z.sum() / sub.n_z.sum()
-        return {'raw_bp': sub.s_raw.sum() / sub.n.sum(), 'res_bp': sub.s_res.sum() / sub.n_z.sum(),
-                'z_mean': zm, 'z_std': float(np.sqrt(sub.s_z2.sum() / sub.n_z.sum() - zm ** 2)),
-                'hedge_bp': sub.s_hedge.sum() / sub.n_z.sum()}
-    c, b = pooled(df[df.side == 'condition']), pooled(df[df.side == 'baseline'])
-    mz = df.pivot_table(index='Date', columns='side', values='s_z')
-    nz = df.pivot_table(index='Date', columns='side', values='n_z')
-    dz = (mz['condition'] / nz['condition']) - (mz['baseline'] / nz['baseline'])
-    ymm = dz.groupby(df.groupby('Date').ym.first()).mean()
-    print(f"[B] Δz {c['z_mean'] - b['z_mean']:+.3f}σ | Δres {c['res_bp'] - b['res_bp']:+.1f}bp | "
-          f"Δraw {c['raw_bp'] - b['raw_bp']:+.1f}bp | 市場搭車Δhedge {c['hedge_bp'] - b['hedge_bp']:+.1f}bp")
-    print(f"    日級 t={dz.mean() / dz.std() * np.sqrt(len(dz)):.1f} | 正Δz日 {(dz > 0).mean():.0%} | "
-          f"正Δz月 {(ymm > 0).sum()}/{len(ymm)} | baseline z_std {b['z_std']:.2f} (應≈1)")
-    print('    月度Δz:', {k: round(v, 3) for k, v in ymm.items()})
+        n = sub.n_z.sum()
+        z_mean = sub.sum_z.sum() / n
+        variance = max(sub.sum_z2.sum() / n - z_mean**2, 0.0)
+        return {
+            "raw_bp": sub.sum_raw_bp.sum() / n,
+            "residual_bp": sub.sum_residual_bp.sum() / n,
+            "z_mean": z_mean,
+            "z_std": float(np.sqrt(variance)),
+            "market_component_bp": sub.sum_market_component_bp.sum() / n,
+            "hedge_pnl_bp": sub.sum_hedge_pnl_bp.sum() / n,
+        }
+
+    condition_pooled, control_pooled = pooled(condition), pooled(control)
+    sum_z = frame.pivot_table(index="Date", columns="cohort", values="sum_z")
+    n_z = frame.pivot_table(index="Date", columns="cohort", values="n_z")
+    delta_z = (sum_z.condition / n_z.condition) - (
+        sum_z.control / n_z.control
+    )
+    month_for_date = frame.groupby("Date").ym.first()
+    monthly = delta_z.groupby(month_for_date).mean()
+    print(
+        f"[B] Δz {condition_pooled['z_mean'] - control_pooled['z_mean']:+.3f}σ | "
+        f"Δres {condition_pooled['residual_bp'] - control_pooled['residual_bp']:+.1f}bp | "
+        f"Δraw {condition_pooled['raw_bp'] - control_pooled['raw_bp']:+.1f}bp | "
+        f"Δmarket {condition_pooled['market_component_bp'] - control_pooled['market_component_bp']:+.1f}bp | "
+        f"ΔhedgePnL {condition_pooled['hedge_pnl_bp'] - control_pooled['hedge_pnl_bp']:+.1f}bp"
+    )
+    daily_t = delta_z.mean() / delta_z.std() * np.sqrt(len(delta_z))
+    print(
+        f"    日級 t={daily_t:.1f} | 正Δz日 {(delta_z > 0).mean():.0%} | "
+        f"正Δz月 {(monthly > 0).sum()}/{len(monthly)} | "
+        f"control z_std {control_pooled['z_std']:.2f} (應≈1)"
+    )
+    print("    月度Δz:", {key: round(value, 3) for key, value in monthly.items()})
 
     def share(sub, axis):
-        tot = {}
-        for g in sub.grid:
-            for k, v in g.items():
-                tot[k] = tot.get(k, 0) + v
-        s = pd.Series(tot)
-        s = s.groupby([k.split('_')[axis] for k in s.index]).sum()
-        return s / s.sum()
-    for axis, lab, names in [(0, '時段', T_LABEL), (1, 'ToRef', R_LABEL)]:
-        sc = share(df[df.side == 'condition'], axis)
-        sb = share(df[df.side == 'baseline'], axis)
-        tv = (sc.reindex(sb.index.union(sc.index), fill_value=0)
-              - sb.reindex(sb.index.union(sc.index), fill_value=0)).abs().sum() / 2
-        tbl = pd.DataFrame({'condition%': sc * 100, 'tick流%': sb * 100}).rename(index=names)
-        print(f"[C] {lab} TV={tv:.3f}\n{tbl.round(1).to_string()}")
+        totals: dict[str, int] = {}
+        for grid in sub.grid:
+            for key, value in grid.items():
+                totals[key] = totals.get(key, 0) + value
+        series = pd.Series(totals, dtype=float)
+        groups = [key.split("|")[axis] for key in series.index]
+        series = series.groupby(groups).sum()
+        return series / series.sum()
+
+    for axis, label, names in (
+        (0, "時段", T_LABEL),
+        (1, "Bid/Ref", R_LABEL),
+    ):
+        condition_share = share(condition, axis)
+        control_share = share(control, axis)
+        union = control_share.index.union(condition_share.index)
+        tv = (
+            condition_share.reindex(union, fill_value=0)
+            - control_share.reindex(union, fill_value=0)
+        ).abs().sum() / 2
+        table = pd.DataFrame(
+            {"condition%": condition_share * 100, "control%": control_share * 100}
+        ).rename(index=names)
+        print(f"[C] {label} TV={tv:.3f}\n{table.round(1).to_string()}")
 
 
-if __name__ == '__main__':
-    ap = argparse.ArgumentParser()
-    ap.add_argument('--events-dir', default=str(PROJECT_ROOT / 'src/research/timeSeries/data'))
-    ap.add_argument('--start', default='20250211')
-    ap.add_argument('--end', default='20991231')
-    ap.add_argument('--step', type=int, default=3)
-    ap.add_argument('--sample', type=int, default=25000)
-    ap.add_argument('--side', choices=['short', 'long'], default='short')
-    args = ap.parse_args()
-    report(scan(args.events_dir, args.start, args.end, args.step, args.sample, args.side))
+def _main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--event-index", type=Path, default=DEFAULT_EVENT_INDEX)
+    parser.add_argument(
+        "--events-dir",
+        type=Path,
+        default=None,
+        help="Legacy alternative: read event keys from merged per-day files",
+    )
+    parser.add_argument("--start", default="20250211")
+    parser.add_argument("--end", default="20991231")
+    parser.add_argument("--step", type=int, default=3)
+    parser.add_argument("--sample", type=int, default=25_000)
+    parser.add_argument("--side", choices=["short", "long"], default=None)
+    parser.add_argument("--label-profile", choices=sorted(LABEL_PROFILES), default=None)
+    parser.add_argument("--continue-on-error", action="store_true")
+    args = parser.parse_args()
+    if args.side is not None and args.label_profile is not None:
+        parser.error("--side and --label-profile are mutually exclusive")
+    side = args.side or "short"
+    report(
+        scan(
+            args.events_dir,
+            args.start,
+            args.end,
+            args.step,
+            args.sample,
+            side,
+            event_index=(None if args.events_dir is not None else args.event_index),
+            label_profile=args.label_profile,
+            fail_fast=not args.continue_on_error,
+        )
+    )
+
+
+if __name__ == "__main__":
+    _main()

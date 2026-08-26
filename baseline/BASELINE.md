@@ -1,5 +1,8 @@
 # Baseline：確定採用的 timeSeries 點位
 
+Artifact SHA-256：
+`07bbd10b451bd7ba8d02d9a30266f6370b7e170194bc45da3b4632ad3f3df031`
+
 `timeseries_points.parquet` = 現行採用配置在全樣本(2025-09-03~2026-08-17)產出的成交點
 （倉位上限後，57,830 筆 / 227 交易日）。欄位含 unikey、BidPrice1、TakerSell_CloseBP、
 兩個模型分數、TimeBucket/ToRefBucket 與深度旗標(deep = FillLots_atLow ratio < -2)。

@@ -1,12 +1,19 @@
----
-name: timeseries-signal-research
-description: timeSeries 乾淨訊號研究範本（de-beta + U-shape vol normalization）。開發任何日內多空訊號時使用：data merge、label 構造（多空符號規則）、特徵紀律、rolling 模型、16-cell 門檻、評估紀律與上線前查核清單。含 negFill 2025-09~2026-08 實證出處與踩雷紀錄。
----
+# 2026-08-19～21 signal research legacy digest
 
-# timeSeries 訊號研究範本
+> Status: archived summary-only evidence。這份文件由舊 `SKILL.md` 搬入，保留當時的
+> workflow、校準數字、候選判定與踩雷紀錄；它不是目前 framework／discovery 契約。
+> 現行流程請讀 [canonical skill](../../../../../../.codex/skills/timeseries-signal-research/SKILL.md)、
+> [framework](../../../docs/FRAMEWORK.md) 與
+> [discovery protocol](../../../docs/protocols/DISCOVERY_PROTOCOL.md)。同期的原始實驗表見
+> [EXPERIMENT_TABLE.md](EXPERIMENT_TABLE.md)。
 
-目標：在「去 beta + U-shape vol 還原」的乾淨框架上開發日內多空訊號。
-實證基礎：negFill 空方訊號 2025-09~2026-08（見文末事故紀錄，所有規則都有數字出處）。
+## 封存的 timeSeries 訊號研究範本
+
+目標：在「去 beta + U-shape vol 還原」的乾淨框架上開發任意日內事件。
+實證基礎：negFill 空方訊號 2025-09~2026-08；其數字用來校準方法，
+不能把 negFill selector、空方、B1 entry、停損、universe、分桶或門檻複製成
+新事件的隱含預設。以下為歷史文字；現行入口與版本規則以
+[FRAMEWORK.md](../../../docs/FRAMEWORK.md) 為準。
 
 ## 0. Condition 的角色（框架第一原理）
 
@@ -24,6 +31,11 @@ description: timeSeries 乾淨訊號研究範本（de-beta + U-shape vol normali
 ### 0.1 Condition 驗收指標（追蹤儀表板，基準：negFill 實測 2025-02~2026-08）
 
 新 condition 先跑 `condition_benchmark.py`（同靜態濾網下 vs 全 tick 流均勻抽樣），看三組指標：
+
+下表數字是歷史 `legacy_condition_study_v1` 校準值；新版 CLI 使用
+`shared_valid_pool_v2`，先把 eligibility 與 label complete-case 固定成同一母體
+才分 condition/control。兩版 cohort 不同，不能把數字差異解讀成 alpha 漂移；
+累積完整 v2 結果後另立新基準，不回填本表。
 
 | 指標 | 定義 | negFill 基準值 | 初步及格線 |
 |---|---|---|---|
@@ -63,11 +75,15 @@ description: timeSeries 乾淨訊號研究範本（de-beta + U-shape vol normali
 
 ## 1. 資料流
 
+```text
+EventIndexSpec(selector + version) → canonical event keys
+  → EventDatasetSpec(universe + merge/alignment version)
+  → DirectionalLabelSpec → FeatureManifest → rolling model
+  → PriorQuantileSpec → backtest
 ```
-data_index.parquet（訊號點 unikey，由 build_index.py 產生）
-  → data_loader.py 逐日 merge：tickData + tickFeature + preMarket + tickBar + TXF
-  → src/research/timeSeries/data/YYYYMMDD.parquet
-```
+
+`build_index.py`、`data_loader.py` 與既有 `data/` 是 negFill compatibility
+adapter/artifact；新事件直接使用 `framework/` 並寫新的 versioned output 目錄。
 
 - 重建：`uv run python src/research/timeSeries/data_loader.py --start YYYYMMDD --end YYYYMMDD`
 - **merge 層只接資料、不算 label**。label 一律在 notebook/研究層算。
@@ -121,8 +137,11 @@ netM = residual - groupby(['Date']).transform('mean')              # 選股 labe
 
 ## 5. 模型
 
-- `src/research/rolling_model.py::train_and_predict_ridge_rolling`，每日重訓，net 用 60d、netM 用 20d，alpha=0.1。
-- 函式內會 `dropna(subset=[Y_col])`（vol null 列會消失）；特徵缺值用前一日中位數補。
+- `time_series_research_model.py` 透過 `train_and_predict_causal_v2` 每日重訓，
+  net 用 60d、netM 用 20d，alpha=0.1。
+- label 缺值仍由 rolling engine `dropna(subset=[Y_col])`；feature preprocessing
+  只執行一次，依 manifest 使用 strictly-prior median／fixed fallback／mask-zero。
+  直接呼叫 `rolling_model.py` 的預設是 frozen `legacy_v1`，只供舊 notebook 重現。
 - **不要切 day-type 模型**：AB 日獨立模型與 normal 模型預測 rank 相關 0.83、IC 零增益；混訓 pooled 略優或持平。
   要保守就用同一組 pred 配較嚴門檻，別切模型（AB 門檻 q=0.9/0.5 曾在 2026 掐掉 ~414 萬）。
 - Ridge 固定係數對 regime 轉變反應極慢（ToRef IC 1 月死、係數押了一整年）⇒ 結構座標務必移出模型（見 §4）。
