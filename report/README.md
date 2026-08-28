@@ -12,6 +12,9 @@ README 或 skill。
 | `20260825_filllots_at_low_framework` | scoped/canonical event-shaping 與 matched attribution；不是 raw-state Stage 0 gate | [report](studies/20260825_filllots_at_low_framework/REPORT.md) | [study code](../test/20260825_filllots_at_low_framework/) |
 | `20260826_filllots_at_low_state_bias` | canonical raw-state long/short positive-control recovery | [report](studies/20260826_filllots_at_low_state_bias/REPORT.md) | [study code](../test/20260826_filllots_at_low_state_bias/) |
 | `20260826_filllots_at_high_feature_bias` | scoped shared-pool long/short bias；dense 與 calendar complement 通過，但同股／時段 attribution 反向 | [report](studies/20260826_filllots_at_high_feature_bias/REPORT.md) | [study code](../test/20260826_filllots_at_high_feature_bias/) |
+| `20260826_filllots_at_high_signal` | scoped/research-only；空方 standalone BackTest 過成本，但 model gate 無 holdout 增益且非 negFill-independent stock-day book | [report](studies/20260826_filllots_at_high_signal/REPORT.md) | [study code](../test/20260826_filllots_at_high_signal/) |
+| `20260827_fh_neg_rejection_robustness` | `RESEARCH_SHADOW_ONLY`；D/B 有實質支持、G 僅統計正向且邊際；27-cell 回顧式 plateau 通過；另保存 static retrospective BackTest，但仍無 prospective first-live | [report](studies/20260827_fh_neg_rejection_robustness/REPORT.md) · [static BackTest](studies/20260827_fh_neg_rejection_robustness/STATIC_BACKTEST.md) | [study code](../test/20260827_fh_neg_rejection_robustness/) |
+| `20260827_netfill_long_cover` | `RESEARCH_DIAGNOSTIC_ONLY`；六條 signed-FillLots long 在 0bp 已全負，雖有 short-tail complement shape，但固定 cover frontier 無 Sharpe/MDD joint improvement | [report](studies/20260827_netfill_long_cover/REPORT.md) | [study code](../test/20260827_netfill_long_cover/) |
 
 ## 新報告慣例
 

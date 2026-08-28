@@ -18,6 +18,8 @@
 | [`20260825_filllots_at_low_framework/`](20260825_filllots_at_low_framework/) | 26-candidate event shaping、shared/matched attribution 與 overlap audit | [framework validation](../report/studies/20260825_filllots_at_low_framework/REPORT.md) |
 | [`20260826_filllots_at_low_state_bias/`](20260826_filllots_at_low_state_bias/) | 原始 sign state 的 long/short shared bias、HAC 與 distribution report | [state-bias report](../report/studies/20260826_filllots_at_low_state_bias/REPORT.md) |
 | [`20260826_filllots_at_high_feature_bias/`](20260826_filllots_at_high_feature_bias/) | MD first-visit／large-fill 去重、tickFeature interactions、sparse promotion 與 dense attribution | [feature-bias report](../report/studies/20260826_filllots_at_high_feature_bias/REPORT.md) |
+| [`20260826_filllots_at_high_signal/`](20260826_filllots_at_high_signal/) | `fh_neg_rejection` 空方的 causal rolling model、prior threshold、容量、成本、BackTest 與 negFill overlap | [tradingized signal report](../report/studies/20260826_filllots_at_high_signal/REPORT.md) |
+| [`20260827_fh_neg_rejection_robustness/`](20260827_fh_neg_rejection_robustness/) | `fh_neg_rejection` D/G/B factorial 必要性、lineage、selection-bias 與 27-cell fixed-threshold plateau 診斷 | [robustness report](../report/studies/20260827_fh_neg_rejection_robustness/REPORT.md) |
 
 ## 儲存契約
 
