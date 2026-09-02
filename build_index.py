@@ -16,9 +16,12 @@ from pathlib import Path
 
 import polars as pl
 
+from src.pipeline_storage import load_pipeline_storage
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
-TICK_FEATURE_DIR = PROJECT_ROOT / "data" / "tickFeature"
+PIPELINE_STORAGE = load_pipeline_storage(project_root=PROJECT_ROOT)
+TICK_FEATURE_DIR = PIPELINE_STORAGE.tick_feature_dir
 OUTPUT_DIR = PROJECT_ROOT / "src" / "research" / "timeSeries"
 OUTPUT_PATH = OUTPUT_DIR / "data_index.parquet"
 

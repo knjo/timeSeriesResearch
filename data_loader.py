@@ -17,17 +17,20 @@ from pathlib import Path
 
 import polars as pl
 
+from src.dataloader.preMarketJoin import join_pre_market_features
 from src.dataloader.txfDataLoader import TxfDataLoader, attach_txf_to_1330_return
 from src.features.market_beta import add_txf_event_residual_vol
+from src.pipeline_storage import load_pipeline_storage
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
-DATA_DIR = PROJECT_ROOT / "data"
-TICK_DATA_DIR = DATA_DIR / "tickData"
-TICK_FEATURE_DIR = DATA_DIR / "tickFeature"
-PRE_MARKET_DIR = DATA_DIR / "preMarket"
-TICK_BAR_DIR = DATA_DIR / "tickBar"
-TXF_TICK_DIR = DATA_DIR / "txfTickData"
+PIPELINE_STORAGE = load_pipeline_storage(project_root=PROJECT_ROOT)
+DATA_DIR = PIPELINE_STORAGE.base_dir
+TICK_DATA_DIR = PIPELINE_STORAGE.tick_dir
+TICK_FEATURE_DIR = PIPELINE_STORAGE.tick_feature_dir
+PRE_MARKET_DIR = PIPELINE_STORAGE.pre_market_dir
+TICK_BAR_DIR = PIPELINE_STORAGE.tick_bar_dir
+TXF_TICK_DIR = PIPELINE_STORAGE.txf_tick_dir
 INDEX_PATH = Path(__file__).with_name("data_index.parquet")
 OUTPUT_DIR = Path(__file__).with_name("data")
 UNIKEY_COLS = ["QuoteCode", "ChannelSeq"]
@@ -41,6 +44,7 @@ class DeploymentDataPaths:
     pre_market_dir: Path
     tick_bar_dir: Path
     txf_tick_dir: Path
+    brench_feature_dir: Path
 
     def __post_init__(self) -> None:
         for field_name in (
@@ -49,6 +53,7 @@ class DeploymentDataPaths:
             "pre_market_dir",
             "tick_bar_dir",
             "txf_tick_dir",
+            "brench_feature_dir",
         ):
             object.__setattr__(self, field_name, Path(getattr(self, field_name)))
 
@@ -66,6 +71,7 @@ DATA_PATHS = DeploymentDataPaths(
     pre_market_dir=PRE_MARKET_DIR,
     tick_bar_dir=TICK_BAR_DIR,
     txf_tick_dir=TXF_TICK_DIR,
+    brench_feature_dir=PIPELINE_STORAGE.brench_feature_dir,
 )
 
 
@@ -163,16 +169,22 @@ def _merge_one_day(
 
     pre_market_path = data_paths.pre_market_dir / f"{date}_preMarketData.parquet"
     if pre_market_path.exists():
-        pre_market = pl.read_parquet(pre_market_path)
-        if "ClosePrice" in pre_market.columns:
-            if "PreviousClosePrice" not in pre_market.columns:
-                pre_market = pre_market.with_columns(
-                    pl.col("ClosePrice").alias("PreviousClosePrice")
-                )
-            pre_market = pre_market.drop("ClosePrice")
-        merged = merged.join(pre_market, on="QuoteCode", how="left", suffix="_pm")
+        merged = join_pre_market_features(merged, pl.read_parquet(pre_market_path))
     else:
         print(f"  [WARN] preMarket not found: {pre_market_path.name}, skipping")
+
+    # brenchFeature follows the same date contract as preMarket: the file
+    # named for this decision day carries prior-day branch features only.
+    brench_path = data_paths.brench_feature_dir / f"{date}_brenchFeature.parquet"
+    if brench_path.exists():
+        brench_feature = pl.read_parquet(brench_path).drop(
+            "feature_date", "decision_date", strict=False
+        )
+        merged = merged.join(
+            brench_feature, on="QuoteCode", how="left", suffix="_bf"
+        )
+    else:
+        print(f"  [WARN] brenchFeature not found: {brench_path.name}, skipping")
 
     tick_bar_path = data_paths.tick_bar_dir / f"{date}_tickBar.parquet"
     if tick_bar_path.exists():

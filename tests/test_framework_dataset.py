@@ -62,6 +62,8 @@ def _write_minimal_sources(roots: DataRoots) -> None:
         {
             "QuoteCode": ["2330"],
             "nextday_allow_day_trade_mark": ["X"],
+            "txf_beta_60d": [1.1],
+            "txf_beta_enrichment_ok": [True],
         }
     ).write_parquet(roots.pre_market_dir / f"{DATE}_preMarketData.parquet")
     # The stock did not trade between 09:04 and 09:10.  The 09:10 cross-
@@ -127,6 +129,8 @@ class FrameworkDatasetTest(unittest.TestCase):
             self.assertEqual(result.frame["TimeSlot"][0], time(9, 5))
             self.assertEqual(result.audit.indexed_rows, 1)
             self.assertEqual(result.audit.universe_removed_rows, 0)
+            self.assertEqual(result.frame["txf_beta_60d"].to_list(), [1.1])
+            self.assertNotIn("txf_beta_enrichment_ok", result.frame.columns)
 
     def test_universe_is_explicit_and_missing_eligibility_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

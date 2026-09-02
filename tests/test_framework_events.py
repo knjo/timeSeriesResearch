@@ -77,6 +77,36 @@ def _multi_source_selector(day: EventDaySources) -> pl.LazyFrame:
 
 
 class EventFrameworkTest(unittest.TestCase):
+    def test_data_roots_use_pipeline_config_but_keep_temp_root_fallback(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            fallback = DataRoots.from_project_root(root)
+            self.assertEqual(fallback.tick_data_dir, root / "data" / "tickData")
+
+            configured_base = root / "external" / "Data"
+            config_dir = root / "config"
+            config_dir.mkdir()
+            (config_dir / "pipeline.yaml").write_text(
+                """
+data_storage:
+  base_dir: external/Data
+  tick_dir: stockTicks
+  txf_tick_dir: futuresTicks
+""".lstrip(),
+                encoding="utf-8",
+            )
+
+            configured = DataRoots.from_project_root(root)
+            self.assertEqual(configured.tick_data_dir, configured_base / "stockTicks")
+            self.assertEqual(
+                configured.txf_tick_dir,
+                configured_base / "futuresTicks",
+            )
+            self.assertEqual(
+                configured.pre_market_dir,
+                configured_base / "preMarket",
+            )
+
     def test_negfill_profile_owns_versioned_event_index_spec(self) -> None:
         spec = negfill_event_index_spec(Path("negfill.parquet"))
 

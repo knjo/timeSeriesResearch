@@ -19,6 +19,7 @@ from typing import Callable, Literal
 
 import polars as pl
 
+from src.dataloader.preMarketJoin import join_pre_market_features
 from src.dataloader.txfDataLoader import TxfDataLoader, attach_txf_to_1330_return
 from src.features.market_beta import add_txf_event_residual_vol
 
@@ -313,20 +314,8 @@ def _attach_pre_market(
     pre_market = pl.read_parquet(path)
     _require_columns(pre_market, ["QuoteCode"], f"{date} preMarket")
     _assert_unique(pre_market, ("QuoteCode",), f"{date} preMarket")
-    if "ClosePrice" in pre_market.columns:
-        if "PreviousClosePrice" not in pre_market.columns:
-            pre_market = pre_market.with_columns(
-                pl.col("ClosePrice").alias("PreviousClosePrice")
-            )
-        pre_market = pre_market.drop("ClosePrice")
     before = merged
-    merged = merged.join(
-        pre_market,
-        on="QuoteCode",
-        how="left",
-        validate="m:1",
-        suffix="_pm",
-    )
+    merged = join_pre_market_features(merged, pre_market, validate="m:1")
     if options.strict_cardinality:
         _assert_same_event_set(before, merged, context=f"{date} preMarket merge")
     return merged

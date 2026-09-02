@@ -18,6 +18,8 @@ from typing import Literal, Protocol, TypeAlias
 
 import polars as pl
 
+from src.pipeline_storage import load_pipeline_storage
+
 
 SourceName: TypeAlias = Literal[
     "tick_data",
@@ -97,7 +99,22 @@ class DataRoots:
 
     @classmethod
     def from_project_root(cls, project_root: Path) -> DataRoots:
-        data_dir = Path(project_root) / "data"
+        root = Path(project_root)
+        config_path = root / "config" / "pipeline.yaml"
+        if config_path.is_file():
+            storage = load_pipeline_storage(
+                project_root=root,
+                config_path=config_path,
+            )
+            return cls(
+                tick_data_dir=storage.tick_dir,
+                tick_feature_dir=storage.tick_feature_dir,
+                pre_market_dir=storage.pre_market_dir,
+                tick_bar_dir=storage.tick_bar_dir,
+                txf_tick_dir=storage.txf_tick_dir,
+            )
+
+        data_dir = root / "data"
         return cls(
             tick_data_dir=data_dir / "tickData",
             tick_feature_dir=data_dir / "tickFeature",
