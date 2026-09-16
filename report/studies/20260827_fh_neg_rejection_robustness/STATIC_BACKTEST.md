@@ -7,6 +7,9 @@ Direction: short
 Evidence: outcome-informed retrospective diagnostic  
 Window: `20250211–20260825`
 
+後續完整交易日的獨立版本延伸見 [EXTENSION_20260914.md](EXTENSION_20260914.md)；
+本凍結快照與下列歷史結論不改寫。
+
 ## 結論
 
 已把 2026-08-27 robustness study 的 conservative `D+G+B` anchor 做成可重現、
