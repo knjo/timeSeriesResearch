@@ -418,11 +418,11 @@ Final machine decision：`RESEARCH_SHADOW_ONLY`；`deployment_authorized=false`�
 
 ```bash
 uv run python -m unittest discover \
-  -s src/research/timeSeries/test/20260827_fh_neg_rejection_robustness \
+  -s src/research/intradaySignal/experiments/20260827_fh_neg_rejection_robustness \
   -p 'test*.py' -v
 
 uv run python \
-  src/research/timeSeries/test/20260827_fh_neg_rejection_robustness/build_decision_artifact.py
+  src/research/intradaySignal/experiments/20260827_fh_neg_rejection_robustness/build_decision_artifact.py
 ```
 
 本次驗證為 89/89 tests 通過；decision builder 連續執行的輸出 SHA-256 相同：
@@ -436,18 +436,18 @@ report_data.json e8839a6fe5fab151243c202c4751949b81f5267c77aa9356caa61f44698436d
 
 ```bash
 uv run python \
-  src/research/timeSeries/test/20260827_fh_neg_rejection_robustness/evaluate_robustness.py \
-  --daily-aggregates src/research/timeSeries/test/20260827_fh_neg_rejection_robustness/artifacts/dgb_factorial_v1/daily_stats.parquet \
-  --requested-calendar src/research/timeSeries/test/20260827_fh_neg_rejection_robustness/artifacts/calendar_retrospective_v1/requested_calendar.parquet \
-  --output-dir src/research/timeSeries/test/20260827_fh_neg_rejection_robustness/artifacts/inference_retrospective_v1
+  src/research/intradaySignal/experiments/20260827_fh_neg_rejection_robustness/evaluate_robustness.py \
+  --daily-aggregates src/research/intradaySignal/experiments/20260827_fh_neg_rejection_robustness/artifacts/dgb_factorial_v1/daily_stats.parquet \
+  --requested-calendar src/research/intradaySignal/experiments/20260827_fh_neg_rejection_robustness/artifacts/calendar_retrospective_v1/requested_calendar.parquet \
+  --output-dir src/research/intradaySignal/experiments/20260827_fh_neg_rejection_robustness/artifacts/inference_retrospective_v1
 
 uv run python \
-  src/research/timeSeries/test/20260827_fh_neg_rejection_robustness/evaluate_threshold_plateau.py \
-  --daily-aggregates src/research/timeSeries/test/20260827_fh_neg_rejection_robustness/artifacts/threshold_plateau_v1/daily_stats.parquet \
-  --plateau-run-manifest src/research/timeSeries/test/20260827_fh_neg_rejection_robustness/artifacts/threshold_plateau_v1/run_manifest.json \
-  --requested-calendar src/research/timeSeries/test/20260827_fh_neg_rejection_robustness/artifacts/calendar_retrospective_v1/requested_calendar.parquet \
-  --requested-calendar-manifest src/research/timeSeries/test/20260827_fh_neg_rejection_robustness/artifacts/calendar_retrospective_v1/requested_calendar.json \
-  --output-dir src/research/timeSeries/test/20260827_fh_neg_rejection_robustness/artifacts/threshold_plateau_evaluation_v1
+  src/research/intradaySignal/experiments/20260827_fh_neg_rejection_robustness/evaluate_threshold_plateau.py \
+  --daily-aggregates src/research/intradaySignal/experiments/20260827_fh_neg_rejection_robustness/artifacts/threshold_plateau_v1/daily_stats.parquet \
+  --plateau-run-manifest src/research/intradaySignal/experiments/20260827_fh_neg_rejection_robustness/artifacts/threshold_plateau_v1/run_manifest.json \
+  --requested-calendar src/research/intradaySignal/experiments/20260827_fh_neg_rejection_robustness/artifacts/calendar_retrospective_v1/requested_calendar.parquet \
+  --requested-calendar-manifest src/research/intradaySignal/experiments/20260827_fh_neg_rejection_robustness/artifacts/calendar_retrospective_v1/requested_calendar.json \
+  --output-dir src/research/intradaySignal/experiments/20260827_fh_neg_rejection_robustness/artifacts/threshold_plateau_evaluation_v1
 ```
 
 ## Canonical artifacts

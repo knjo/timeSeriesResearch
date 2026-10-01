@@ -7,7 +7,7 @@ from pathlib import Path
 
 import polars as pl
 
-from src.research.timeSeries.framework.dataset import (
+from src.research.intradaySignal.framework.dataset import (
     EventDatasetSpec,
     DatasetContractError,
     MergeOptions,
@@ -16,8 +16,8 @@ from src.research.timeSeries.framework.dataset import (
     materialize_event_day,
     read_event_dataset,
 )
-from src.research.timeSeries.framework.events import DataRoots
-from src.research.timeSeries.framework.profiles.tw_equity import (
+from src.research.intradaySignal.framework.events import DataRoots
+from src.research.intradaySignal.framework.profiles.tw_equity import (
     NEXTDAY_ALLOW_DAY_TRADE_UNIVERSE_V1,
 )
 

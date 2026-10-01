@@ -6,14 +6,14 @@ import unittest
 import polars as pl
 from polars.testing import assert_frame_equal
 
-from src.research.timeSeries.framework.labels import (
+from src.research.intradaySignal.framework.labels import (
     CenterSpec,
     add_centered_labels,
     add_directional_labels,
 )
-from src.research.timeSeries.framework.profiles.benchmark import LONG_TAKER_TP109_V1
-from src.research.timeSeries.framework.profiles.fhl import LONG_MAKER_TP109_V1
-from src.research.timeSeries.framework.profiles.negfill import SHORT_TAKER_STOP108_V1
+from src.research.intradaySignal.framework.profiles.benchmark import LONG_TAKER_TP109_V1
+from src.research.intradaySignal.framework.profiles.fhl import LONG_MAKER_TP109_V1
+from src.research.intradaySignal.framework.profiles.negfill import SHORT_TAKER_STOP108_V1
 
 
 def _label_fixture() -> pl.DataFrame:

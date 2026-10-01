@@ -294,64 +294,64 @@ stock-day attribution。Short rejection 可先作 bearish universe/filter；long
 
 ```bash
 # 1. Frozen 12-candidate sparse screen
-uv run python src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/run_sweep.py \
+uv run python src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/run_sweep.py \
   --start 20250211 --end 20260825 --step 5 \
   --label-profile short-taker-stop108-v1 \
-  --output-dir src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/sparse_short_v1
+  --output-dir src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/artifacts/sparse_short_v1
 
-uv run python src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/run_sweep.py \
+uv run python src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/run_sweep.py \
   --start 20250211 --end 20260825 --step 5 \
   --label-profile long-taker-tp109-v1 \
-  --output-dir src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/sparse_long_v1
+  --output-dir src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/artifacts/sparse_long_v1
 
-uv run python src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/report_sweep.py \
-  --short-dir src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/sparse_short_v1 \
-  --long-dir src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/sparse_long_v1 \
-  --output-dir src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/sparse_report_v1
+uv run python src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/report_sweep.py \
+  --short-dir src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/artifacts/sparse_short_v1 \
+  --long-dir src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/artifacts/sparse_long_v1 \
+  --output-dir src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/artifacts/sparse_report_v1
 
-uv run python src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/select_promotions.py \
-  --period-summary src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/sparse_report_v1/period_summary.parquet \
-  --output src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/sparse_report_v1/promotion.json
+uv run python src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/select_promotions.py \
+  --period-summary src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/artifacts/sparse_report_v1/period_summary.parquet \
+  --output src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/artifacts/sparse_report_v1/promotion.json
 
 # 2. Only the preregistered promoted candidate in each direction
-uv run python src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/run_sweep.py \
+uv run python src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/run_sweep.py \
   --start 20250211 --end 20260825 --step 1 --candidate fh_neg_rejection \
   --label-profile short-taker-stop108-v1 \
-  --output-dir src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/dense_short_neg_rejection_v1
+  --output-dir src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/artifacts/dense_short_neg_rejection_v1
 
-uv run python src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/run_sweep.py \
+uv run python src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/run_sweep.py \
   --start 20250211 --end 20260825 --step 1 --candidate fh_pos_breakout \
   --label-profile long-taker-tp109-v1 \
-  --output-dir src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/dense_long_pos_breakout_v1
+  --output-dir src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/artifacts/dense_long_pos_breakout_v1
 
-uv run python src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/report_dense.py \
-  --promotion-json src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/sparse_report_v1/promotion.json \
-  --short-dir src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/dense_short_neg_rejection_v1 \
-  --long-dir src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/dense_long_pos_breakout_v1 \
-  --output-dir src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/dense_report_v1
+uv run python src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/report_dense.py \
+  --promotion-json src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/artifacts/sparse_report_v1/promotion.json \
+  --short-dir src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/artifacts/dense_short_neg_rejection_v1 \
+  --long-dir src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/artifacts/dense_long_pos_breakout_v1 \
+  --output-dir src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/artifacts/dense_report_v1
 
 # 3. Internal robustness and overlap attribution
-uv run python src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/report_dense_complement.py \
-  --promotion-json src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/sparse_report_v1/promotion.json \
-  --dense-short-dir src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/dense_short_neg_rejection_v1 \
-  --dense-long-dir src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/dense_long_pos_breakout_v1 \
-  --sparse-short-dir src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/sparse_short_v1 \
-  --sparse-long-dir src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/sparse_long_v1 \
-  --output-dir src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/dense_complement_report_v1
+uv run python src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/report_dense_complement.py \
+  --promotion-json src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/artifacts/sparse_report_v1/promotion.json \
+  --dense-short-dir src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/artifacts/dense_short_neg_rejection_v1 \
+  --dense-long-dir src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/artifacts/dense_long_pos_breakout_v1 \
+  --sparse-short-dir src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/artifacts/sparse_short_v1 \
+  --sparse-long-dir src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/artifacts/sparse_long_v1 \
+  --output-dir src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/artifacts/dense_complement_report_v1
 
-uv run python src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/overlap_audit.py \
-  --promotion-json src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/sparse_report_v1/promotion.json \
-  --sparse-manifest src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/sparse_short_v1/run_manifest.json \
-  --sparse-report-dir src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/sparse_report_v1 \
-  --short-state-dir src/research/timeSeries/test/20260825_filllots_at_low_framework/artifacts/state_recovery_short_dense_v1 \
-  --long-state-dir src/research/timeSeries/test/20260825_filllots_at_low_framework/artifacts/state_recovery_long_dense_v1 \
-  --output-dir src/research/timeSeries/test/20260826_filllots_at_high_feature_bias/artifacts/overlap_audit_v1 \
+uv run python src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/overlap_audit.py \
+  --promotion-json src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/artifacts/sparse_report_v1/promotion.json \
+  --sparse-manifest src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/artifacts/sparse_short_v1/run_manifest.json \
+  --sparse-report-dir src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/artifacts/sparse_report_v1 \
+  --short-state-dir src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/artifacts/state_recovery_short_dense_v1 \
+  --long-state-dir src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/artifacts/state_recovery_long_dense_v1 \
+  --output-dir src/research/intradaySignal/experiments/20260826_filllots_at_high_feature_bias/artifacts/overlap_audit_v1 \
   --date-step 7
 
 # 4. Contract and reporter regression suite
 uv run python -m unittest \
-  src.research.timeSeries.tests.test_filllots_at_high_profile \
-  src.research.timeSeries.tests.test_filllots_at_high_report \
-  src.research.timeSeries.tests.test_filllots_at_high_dense_report \
-  src.research.timeSeries.tests.test_filllots_at_high_dense_complement_report -v
+  src.research.intradaySignal.tests.test_filllots_at_high_profile \
+  src.research.intradaySignal.tests.test_filllots_at_high_report \
+  src.research.intradaySignal.tests.test_filllots_at_high_dense_report \
+  src.research.intradaySignal.tests.test_filllots_at_high_dense_complement_report -v
 ```

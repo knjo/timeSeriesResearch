@@ -5,7 +5,7 @@ import unittest
 import polars as pl
 from polars.testing import assert_frame_equal
 
-from src.research.timeSeries.framework.prior_thresholds import (
+from src.research.intradaySignal.framework.prior_thresholds import (
     PriorQuantileSpec,
     WindowBasis,
     apply_prior_threshold,

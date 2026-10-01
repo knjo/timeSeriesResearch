@@ -260,7 +260,7 @@ immutability，不是 OS immutable bit。原始 raw source binding 使用 path�
 MPLCONFIGDIR=/tmp/matplotlib-hft \
 UV_CACHE_DIR=/tmp/hft-uv-cache \
 uv run python \
-  src/research/timeSeries/test/20260827_netfill_long_cover/run_backtest.py
+  src/research/intradaySignal/experiments/20260827_netfill_long_cover/run_backtest.py
 ```
 
 目前因 manifest 已 finalized，同一指令會依設計拒絕覆寫。若要獨立重建，應建立新的
@@ -271,8 +271,8 @@ artifact version 並保留 v2，不可刪掉 manifest 後原地重跑。純函�
 MPLCONFIGDIR=/tmp/matplotlib-hft-test \
 UV_CACHE_DIR=/tmp/hft-uv-cache \
 uv run python -m unittest \
-  src/research/timeSeries/test/20260827_netfill_long_cover/test_analysis_utils.py \
-  src/research/timeSeries/test/20260827_netfill_long_cover/test_run_backtest.py
+  src/research/intradaySignal/experiments/20260827_netfill_long_cover/test_analysis_utils.py \
+  src/research/intradaySignal/experiments/20260827_netfill_long_cover/test_run_backtest.py
 ```
 
 ## 限制與下一步邊界

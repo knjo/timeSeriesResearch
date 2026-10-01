@@ -8,9 +8,9 @@ import numpy as np
 import pandas as pd
 
 import src.research.rolling_model as rolling_model
-import src.research.timeSeries.framework.model as framework_model
+import src.research.intradaySignal.framework.model as framework_model
 from src.research.rolling_model import train_and_predict_ridge_rolling
-from src.research.timeSeries.framework.features import (
+from src.research.intradaySignal.framework.features import (
     FeatureManifest,
     FeatureSpec,
     prepare_feature_frame,

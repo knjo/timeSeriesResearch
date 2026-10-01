@@ -12,12 +12,12 @@ from unittest import mock
 
 import polars as pl
 
-from src.research.timeSeries.framework.events import EventIndexValidationError
+from src.research.intradaySignal.framework.events import EventIndexValidationError
 
 
 RUNNER_PATH = (
     Path(__file__).resolve().parents[1]
-    / "test"
+    / "experiments"
     / "20260825_filllots_at_low_framework"
     / "run_negfill_overlap.py"
 )

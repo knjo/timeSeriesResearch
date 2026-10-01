@@ -64,7 +64,7 @@
 1. **stock-day 資本重疊率**（雙向）——用 stock-day 層不是 tick 層：倉位上限下「出現在哪些股票日」決定書的相關性（雙書實驗 corr 0.94 的來源）。
 2. **disjoint 段殘餘切割力**（主判準）——「新 ∧ ¬negFill」事件的 Δz。edge 全在交集＝negFill 的另一種寫法（深度=子集、disjoint 為空的極端案例）。
 3. **日級 proxy 損益相關**——雙方「每日事件 mean z」序列的 corr，是未來兩本書損益相關的上界，模型跑之前就能預測。
-4. **視同一筆重疊率**（書級，執行層；與 stock-day 重疊並列為使用者主看的兩把尺）——同日同檔且（|ΔToRef|≤1% 或 |Δt|≤60s）即視為同一筆（組內最近鄰配對，見 test/20260821_fh15_line/same_trade_overlap.py）。量「進場相似度」，用於流動性競爭評估與實盤疊加時的雙重吃單折扣；hold-to-close 下損益相關仍以日損益 ρ 為準（實例：FH15 tick 5% / 視同一筆 58% / stock-day 74% / ρ 0.90）。短 horizon label 時代此尺升為主尺。
+4. **視同一筆重疊率**（書級，執行層；與 stock-day 重疊並列為使用者主看的兩把尺）——同日同檔且（|ΔToRef|≤1% 或 |Δt|≤60s）即視為同一筆（組內最近鄰配對，見 experiments/20260821_fh15_line/same_trade_overlap.py）。量「進場相似度」，用於流動性競爭評估與實盤疊加時的雙重吃單折扣；hold-to-close 下損益相關仍以日損益 ρ 為準（實例：FH15 tick 5% / 視同一筆 58% / stock-day 74% / ρ 0.90）。短 horizon label 時代此尺升為主尺。
 
 決策 2×2：disjoint 有切割力（≥0.05σ、regime 穩）× 低重疊（corr<~0.7）→ 真容量、全流程開發；
 × 高重疊 → 修枝/加碼/特徵；disjoint 無切割力 → 棄（低重疊=Overshoot 型、高重疊=重複發明）。
@@ -85,7 +85,7 @@ EventIndexSpec(selector + version) → canonical event keys
 `build_index.py`、`data_loader.py` 與既有 `data/` 是 negFill compatibility
 adapter/artifact；新事件直接使用 `framework/` 並寫新的 versioned output 目錄。
 
-- 重建：`uv run python src/research/timeSeries/data_loader.py --start YYYYMMDD --end YYYYMMDD`
+- 重建：`uv run python src/research/intradaySignal/pipeline/data_loader.py --start YYYYMMDD --end YYYYMMDD`
 - **merge 層只接資料、不算 label**。label 一律在 notebook/研究層算。
 - TXF 欄位（`src/features/market_beta.py` + `txfDataLoader.py` 產出）：
   - `txf_beta_60d`：盤前算好的 60 日 beta，`n/(n+20)` 向 1 收縮、clip [-0.5, 2]，嚴格 prior-only。
@@ -187,13 +187,13 @@ condition = (net_pred > thr_net) & (netM_pred > thr_netM)
 |---|---|
 | `src/features/market_beta.py` | beta / vol / U-clock（含常數與公式註解） |
 | `src/dataloader/txfDataLoader.py` | TXF L1 讀取、to-1330 return、10s tolerance |
-| `src/research/timeSeries/data_loader.py` | 逐日 merge、read_time_series |
-| `src/research/timeSeries/build_index.py` | 訊號點 index |
+| `src/research/intradaySignal/pipeline/data_loader.py` | 逐日 merge、read_time_series |
+| `src/research/intradaySignal/pipeline/build_index.py` | 訊號點 index |
 | `src/research/rolling_model.py` | rolling Ridge（notebook 用這支，非 multiLabel） |
 | `src/research/qcut_analyzer.py` | plot_qcut_analysis / plot_cut_distribution |
 | `src/research/backTest.py` | 回測報表 |
 | `script/backfill_txfTickData.py` / `validate_txfTickData.py` / `augment_preMarket_beta.py` | TXF 補資料與 beta 增補 |
-| `src/research/timeSeries/time_series_research_model.ipynb` | 範本實作（cell 21 門檻 / cell 23 條件） |
+| `src/research/intradaySignal/notebooks/legacy/time_series_research_model.ipynb` | 範本實作（cell 21 門檻 / cell 23 條件） |
 
 ## 10. 實證出處（negFill，校準預期用）
 

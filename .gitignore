@@ -11,9 +11,10 @@ report/*
 !report/studies/
 report/studies/*/*
 !report/studies/*/*.md
-test/20260825_filllots_at_low_framework/artifacts/
+experiments/20260825_filllots_at_low_framework/artifacts/
 !baseline/*.parquet
 data_fh15/
 fh15_index.parquet
 data_fhL/
 fhL_index.parquet
+artifacts/

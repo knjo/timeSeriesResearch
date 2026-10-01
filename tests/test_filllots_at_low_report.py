@@ -15,7 +15,7 @@ import polars as pl
 
 REPORT_PATH = (
     Path(__file__).resolve().parents[1]
-    / "test"
+    / "experiments"
     / "20260825_filllots_at_low_framework"
     / "report_sweep.py"
 )

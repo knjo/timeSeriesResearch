@@ -908,7 +908,7 @@ passModels = passModelA AND passModelM
 |---|---|---|
 | `metadata.trained_until` | 否 | 確認參數使用到哪一天的訓練資料，避免載入過期或未來參數。 |
 | `metadata.alpha` | 否 | Ridge 訓練時的正則化強度，只是模型追蹤資訊。 |
-| `metadata.otc_turnover_threshold` | 否 | 建立 OTC 盤前目標清單時使用的歷史排名門檻；不直接放進逐筆分數。 |
+| `metadata.otc_turnover_threshold` | 否 | 自 2026-09-21 起固定為 `null`：OTC turnover 目標清單與 `TradeRecord.csv` 機制已自 `modelUpdate.py` 移除（`target_list` 自 7/27 起即固定為空）；欄位保留以維持 schema。 |
 | `suspended_list` | 否 | <span style="color:#6a1b9a;font-weight:700">[MODEL]</span> 當日不可交易清單，於 Gate 最前面排除。它雖由盤前特徵產生，但盤中直接來源是模型檔。 |
 | `target_list` | 否 | <span style="color:#6a1b9a;font-weight:700">[MODEL]</span> 可選的額外目標商品清單；目前程式固定輸出空陣列，代表未啟用。 |
 

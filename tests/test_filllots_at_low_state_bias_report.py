@@ -13,7 +13,7 @@ from polars.testing import assert_frame_equal
 
 REPORT_PATH = (
     Path(__file__).resolve().parents[1]
-    / "test"
+    / "experiments"
     / "20260826_filllots_at_low_state_bias"
     / "report_state_bias.py"
 )

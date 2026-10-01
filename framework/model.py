@@ -15,11 +15,13 @@ def train_and_predict_causal_v2(
     Y_col: str,
     **rolling_kwargs: Any,
 ) -> dict[str, object]:
-    """Run rolling Ridge from an explicit, versioned feature contract.
+    """Run the rolling linear engine from an explicit feature contract.
 
     The wrapper supplies the manifest preparation as the rolling engine's one
     causal preprocessing step.  Feature roles are derived only from the
-    manifest; callers cannot override them through ``rolling_kwargs``.
+    manifest; callers cannot override them through ``rolling_kwargs``. Ridge
+    remains the default. Controlled research ablations may explicitly request
+    ``model_family="elastic_net"`` and its penalty contract.
     """
 
     reserved = {

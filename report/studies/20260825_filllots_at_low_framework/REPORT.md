@@ -211,58 +211,58 @@ cache schema 強化前的 daily files。
 
 ```bash
 UV_CACHE_DIR=/tmp/hft-uv-cache uv run python \
-  src/research/timeSeries/test/20260825_filllots_at_low_framework/run_sweep.py \
+  src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/run_sweep.py \
   --start 20250211 --end 20260824 --step 5 \
-  --output-dir src/research/timeSeries/test/20260825_filllots_at_low_framework/artifacts/reproduce_sparse_v3_sourceid
+  --output-dir src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/artifacts/reproduce_sparse_v3_sourceid
 ```
 
 ```bash
 UV_CACHE_DIR=/tmp/hft-uv-cache uv run python \
-  src/research/timeSeries/test/20260825_filllots_at_low_framework/report_sweep.py \
-  src/research/timeSeries/test/20260825_filllots_at_low_framework/artifacts/reproduce_sparse_v3_sourceid \
+  src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/report_sweep.py \
+  src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/artifacts/reproduce_sparse_v3_sourceid \
   --quiet
 ```
 
 ```bash
 UV_CACHE_DIR=/tmp/hft-uv-cache uv run python \
-  src/research/timeSeries/test/20260825_filllots_at_low_framework/run_sweep.py \
+  src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/run_sweep.py \
   --start 20250211 --end 20251231 --step 1 \
   --candidate depth_gt_pos8_state_update \
-  --output-dir src/research/timeSeries/test/20260825_filllots_at_low_framework/artifacts/reproduce_dense2025_pos8_v3_sourceid
+  --output-dir src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/artifacts/reproduce_dense2025_pos8_v3_sourceid
 ```
 
 ```bash
 UV_CACHE_DIR=/tmp/hft-uv-cache uv run python \
-  src/research/timeSeries/test/20260825_filllots_at_low_framework/run_sweep.py \
+  src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/run_sweep.py \
   --start 20260101 --end 20260824 --step 1 \
   --candidate depth_gt_pos8_state_update \
-  --output-dir src/research/timeSeries/test/20260825_filllots_at_low_framework/artifacts/reproduce_dense2026_pos8_v3_sourceid
+  --output-dir src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/artifacts/reproduce_dense2026_pos8_v3_sourceid
 ```
 
 ```bash
 UV_CACHE_DIR=/tmp/hft-uv-cache uv run python \
-  src/research/timeSeries/test/20260825_filllots_at_low_framework/report_sweep.py \
-  src/research/timeSeries/test/20260825_filllots_at_low_framework/artifacts/reproduce_dense2025_pos8_v3_sourceid \
-  src/research/timeSeries/test/20260825_filllots_at_low_framework/artifacts/reproduce_dense2026_pos8_v3_sourceid \
-  --output-dir src/research/timeSeries/test/20260825_filllots_at_low_framework/artifacts/reproduce_dense_pos8_v3_sourceid/report \
+  src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/report_sweep.py \
+  src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/artifacts/reproduce_dense2025_pos8_v3_sourceid \
+  src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/artifacts/reproduce_dense2026_pos8_v3_sourceid \
+  --output-dir src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/artifacts/reproduce_dense_pos8_v3_sourceid/report \
   --quiet
 ```
 
 ```bash
 UV_CACHE_DIR=/tmp/hft-uv-cache uv run python \
-  src/research/timeSeries/test/20260825_filllots_at_low_framework/run_negfill_overlap.py \
+  src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/run_negfill_overlap.py \
   --start 20250211 --end 20260824 --step 5 \
   --candidate depth_lt_neg1_epoch_entry \
-  --output-dir src/research/timeSeries/test/20260825_filllots_at_low_framework/artifacts/reproduce_overlap_sparse_v3_sourceid
+  --output-dir src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/artifacts/reproduce_overlap_sparse_v3_sourceid
 ```
 
 Artifact source map：
 
 - sparse/dense Student、HAC、BH 數值：
-  `src/research/timeSeries/test/20260825_filllots_at_low_framework/artifacts/<run>/report/period_summary.parquet`；
+  `src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/artifacts/<run>/report/period_summary.parquet`；
 - time-positive day/month：各 `<run>/daily_stats.parquet`，依本文定義聚合；
 - negFill overlap partition：
-  `src/research/timeSeries/test/20260825_filllots_at_low_framework/artifacts/overlap_sparse_v3/summary.parquet`；
+  `src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/artifacts/overlap_sparse_v3/summary.parquet`；
 - v2-v3 selector diff 與 9-day source parity：
   [AUDIT_SUMMARY.json](../../../test/20260825_filllots_at_low_framework/AUDIT_SUMMARY.json)。
 

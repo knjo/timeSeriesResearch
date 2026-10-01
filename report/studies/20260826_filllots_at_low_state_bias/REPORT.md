@@ -220,20 +220,20 @@ lag 5 的「positive-control recovery／joint borderline」判讀。
 
 ```bash
 UV_CACHE_DIR=/tmp/hft-uv-cache uv run python \
-  src/research/timeSeries/test/20260825_filllots_at_low_framework/run_sweep.py \
+  src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/run_sweep.py \
   --candidate-registry state --start 20250211 --end 20260825 --step 1 \
   --label-profile short-taker-stop108-v1 \
-  --output-dir src/research/timeSeries/test/20260825_filllots_at_low_framework/artifacts/state_recovery_short_dense_v1
+  --output-dir src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/artifacts/state_recovery_short_dense_v1
 
 UV_CACHE_DIR=/tmp/hft-uv-cache uv run python \
-  src/research/timeSeries/test/20260825_filllots_at_low_framework/run_sweep.py \
+  src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/run_sweep.py \
   --candidate-registry state --start 20250211 --end 20260825 --step 1 \
   --label-profile long-taker-tp109-v1 \
-  --output-dir src/research/timeSeries/test/20260825_filllots_at_low_framework/artifacts/state_recovery_long_dense_v1
+  --output-dir src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/artifacts/state_recovery_long_dense_v1
 
 UV_CACHE_DIR=/tmp/hft-uv-cache uv run python \
-  src/research/timeSeries/test/20260826_filllots_at_low_state_bias/report_state_bias.py \
-  src/research/timeSeries/test/20260825_filllots_at_low_framework/artifacts/state_recovery_short_dense_v1 \
-  src/research/timeSeries/test/20260825_filllots_at_low_framework/artifacts/state_recovery_long_dense_v1 \
-  --output-dir src/research/timeSeries/test/20260826_filllots_at_low_state_bias/artifacts/dense_report_v1
+  src/research/intradaySignal/experiments/20260826_filllots_at_low_state_bias/report_state_bias.py \
+  src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/artifacts/state_recovery_short_dense_v1 \
+  src/research/intradaySignal/experiments/20260825_filllots_at_low_framework/artifacts/state_recovery_long_dense_v1 \
+  --output-dir src/research/intradaySignal/experiments/20260826_filllots_at_low_state_bias/artifacts/dense_report_v1
 ```

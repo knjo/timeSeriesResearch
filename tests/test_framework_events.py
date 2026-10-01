@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 import polars as pl
 
-from src.research.timeSeries.framework.events import (
+from src.research.intradaySignal.framework.events import (
     EVENT_KEY_COLS,
     DataRoots,
     EventDaySources,
@@ -19,7 +19,7 @@ from src.research.timeSeries.framework.events import (
     normalize_event_keys,
     validate_event_index,
 )
-from src.research.timeSeries.framework.profiles.negfill import (
+from src.research.intradaySignal.framework.profiles.negfill import (
     negfill_event_index_spec,
     select_negfill_events,
 )
@@ -159,7 +159,7 @@ data_storage:
             self.assertEqual(manifest["rows_by_date"], {"20240102": 2, "20240103": 2})
 
             with patch(
-                "src.research.timeSeries.framework.events._atomic_write_parquet"
+                "src.research.intradaySignal.framework.events._atomic_write_parquet"
             ) as parquet_writer:
                 resumed = build_event_index(spec, roots=roots)
             parquet_writer.assert_not_called()
@@ -192,7 +192,7 @@ data_storage:
             )
 
             with patch(
-                "src.research.timeSeries.framework.events._atomic_write_parquet"
+                "src.research.intradaySignal.framework.events._atomic_write_parquet"
             ) as parquet_writer:
                 adopted = build_event_index(spec, roots=roots)
             parquet_writer.assert_not_called()

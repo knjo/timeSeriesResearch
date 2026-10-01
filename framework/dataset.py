@@ -91,6 +91,8 @@ class MergeOptions:
     feature_suffix: str = "_feature"
     schema_policy: SchemaPolicy = "strict"
     preserve_tick_data_column_order: bool = False
+    attach_brench: bool = False
+    require_brench: bool = False
 
     def __post_init__(self) -> None:
         if self.tick_bar_alignment not in {
@@ -167,6 +169,8 @@ def _source_path(roots: DataRoots, source: str, date: str) -> Path:
         "pre_market": roots.pre_market_dir / f"{date}_preMarketData.parquet",
         "tick_bar": roots.tick_bar_dir / f"{date}_tickBar.parquet",
     }
+    if source == "brench_feature":
+        return roots.source_dir("brench_feature") / f"{date}_brenchFeature.parquet"
     return templates[source]
 
 
@@ -321,6 +325,40 @@ def _attach_pre_market(
     return merged
 
 
+def _attach_brench(
+    date: str,
+    merged: pl.DataFrame,
+    roots: DataRoots,
+    options: MergeOptions,
+) -> pl.DataFrame:
+    """Attach the decision-day brenchFeature file (prior-day branch features).
+
+    Mirrors the deployed negFill loader: the file named for this day carries
+    the previous session's branch flows, is keyed by QuoteCode, and joins with
+    the ``_bf`` suffix on any column that already exists.
+    """
+
+    if not options.attach_brench:
+        return merged
+    if roots.brench_feature_dir is None:
+        if options.require_brench:
+            raise MissingDatasetSourceError(f"{date}: brenchFeature root is not configured")
+        return merged
+    path = _source_path(roots, "brench_feature", date)
+    if not path.exists():
+        if options.require_brench:
+            raise MissingDatasetSourceError(f"{date}: missing brenchFeature: {path}")
+        return merged
+    brench = pl.read_parquet(path).drop("feature_date", "decision_date", strict=False)
+    _require_columns(brench, ["QuoteCode"], f"{date} brenchFeature")
+    _assert_unique(brench, ("QuoteCode",), f"{date} brenchFeature")
+    before = merged
+    merged = merged.join(brench, on="QuoteCode", how="left", suffix="_bf")
+    if options.strict_cardinality:
+        _assert_same_event_set(before, merged, context=f"{date} brenchFeature merge")
+    return merged
+
+
 def _tick_bar_columns(frame: pl.DataFrame, requested: tuple[str, ...] | None) -> list[str]:
     if requested is not None:
         missing = [column for column in requested if column not in frame.columns]
@@ -423,6 +461,7 @@ def materialize_event_day(
     indexed_rows = len(event_rows)
     merged = _attach_tick_sources(date, event_rows, roots, options)
     merged = _attach_pre_market(date, merged, roots, options)
+    merged = _attach_brench(date, merged, roots, options)
 
     before_universe = merged
     proposed = options.universe.apply(merged)
@@ -573,6 +612,9 @@ def _manifest_payload(
             else None
         ),
         "attach_txf": options.attach_txf,
+        # Only recorded when enabled so pre-existing study manifests keep
+        # their identity; the default (False) is the historical behavior.
+        **({"attach_brench": True} if options.attach_brench else {}),
         "require_txf": options.require_txf,
         "strict_cardinality": options.strict_cardinality,
         "feature_suffix": options.feature_suffix,

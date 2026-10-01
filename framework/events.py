@@ -27,6 +27,7 @@ SourceName: TypeAlias = Literal[
     "pre_market",
     "tick_bar",
     "txf_tick",
+    "brench_feature",
 ]
 Frame: TypeAlias = pl.DataFrame | pl.LazyFrame
 
@@ -55,6 +56,7 @@ _SOURCE_FILENAMES: dict[SourceName, str] = {
     "pre_market": "{date}_preMarketData.parquet",
     "tick_bar": "{date}_tickBar.parquet",
     "txf_tick": "{date}_TxfTick.parquet",
+    "brench_feature": "{date}_brenchFeature.parquet",
 }
 _SOURCE_GLOBS: dict[SourceName, str] = {
     "tick_data": "*_StockTick.parquet",
@@ -62,6 +64,7 @@ _SOURCE_GLOBS: dict[SourceName, str] = {
     "pre_market": "*_preMarketData.parquet",
     "tick_bar": "*_tickBar.parquet",
     "txf_tick": "*_TxfTick.parquet",
+    "brench_feature": "*_brenchFeature.parquet",
 }
 
 
@@ -86,6 +89,7 @@ class DataRoots:
     pre_market_dir: Path
     tick_bar_dir: Path
     txf_tick_dir: Path
+    brench_feature_dir: Path | None = None
 
     def __post_init__(self) -> None:
         for name in (
@@ -96,6 +100,10 @@ class DataRoots:
             "txf_tick_dir",
         ):
             object.__setattr__(self, name, Path(getattr(self, name)))
+        if self.brench_feature_dir is not None:
+            object.__setattr__(
+                self, "brench_feature_dir", Path(self.brench_feature_dir)
+            )
 
     @classmethod
     def from_project_root(cls, project_root: Path) -> DataRoots:
@@ -112,6 +120,7 @@ class DataRoots:
                 pre_market_dir=storage.pre_market_dir,
                 tick_bar_dir=storage.tick_bar_dir,
                 txf_tick_dir=storage.txf_tick_dir,
+                brench_feature_dir=storage.brench_feature_dir,
             )
 
         data_dir = root / "data"
@@ -121,9 +130,16 @@ class DataRoots:
             pre_market_dir=data_dir / "preMarket",
             tick_bar_dir=data_dir / "tickBar",
             txf_tick_dir=data_dir / "txfTickData",
+            brench_feature_dir=data_dir / "brenchFeature",
         )
 
     def source_dir(self, source: SourceName) -> Path:
+        if source == "brench_feature":
+            if self.brench_feature_dir is None:
+                raise EventIndexError(
+                    "DataRoots has no brench_feature_dir; brenchFeature is unavailable"
+                )
+            return self.brench_feature_dir
         return {
             "tick_data": self.tick_data_dir,
             "tick_feature": self.tick_feature_dir,
@@ -175,6 +191,9 @@ class EventDaySources:
 
     def scan_txf_tick(self) -> pl.LazyFrame:
         return self.scan("txf_tick")
+
+    def scan_brench_feature(self) -> pl.LazyFrame:
+        return self.scan("brench_feature")
 
 
 class EventSelector(Protocol):

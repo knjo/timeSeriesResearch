@@ -7,7 +7,7 @@ Direction: short
 Evidence: outcome-informed retrospective diagnostic  
 Window: `20250211–20260825`
 
-後續完整交易日的獨立版本延伸見 [EXTENSION_20260914.md](EXTENSION_20260914.md)；
+後續完整交易日的獨立版本延伸見 [EXTENSION_20260917.md](EXTENSION_20260917.md)（前版 [EXTENSION_20260916.md](EXTENSION_20260916.md)、[EXTENSION_20260914.md](EXTENSION_20260914.md)）；
 本凍結快照與下列歷史結論不改寫。
 
 ## 結論
@@ -148,11 +148,11 @@ version，保留這份 snapshot。下方第一個指令是本次初次 materiali
 ```bash
 MPLCONFIGDIR=/tmp/matplotlib-hft UV_CACHE_DIR=/tmp/uv-cache-hft \
 uv run python \
-  src/research/timeSeries/test/20260827_fh_neg_rejection_robustness/run_static_backtest.py
+  src/research/intradaySignal/experiments/20260827_fh_neg_rejection_robustness/run_static_backtest.py
 
 MPLCONFIGDIR=/tmp/matplotlib-hft UV_CACHE_DIR=/tmp/uv-cache-hft \
 uv run python -m unittest \
-  src/research/timeSeries/test/20260827_fh_neg_rejection_robustness/test_static_backtest.py
+  src/research/intradaySignal/experiments/20260827_fh_neg_rejection_robustness/test_static_backtest.py
 ```
 
 - [snapshot contract](../../../test/20260827_fh_neg_rejection_robustness/static_backtest_contract.json)

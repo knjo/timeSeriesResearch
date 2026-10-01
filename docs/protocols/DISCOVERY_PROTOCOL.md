@@ -38,7 +38,7 @@ FillLots_atLow < 0
 框架入口是：
 
 ```python
-from src.research.timeSeries.framework.profiles.filllots_at_low import (
+from src.research.intradaySignal.framework.profiles.filllots_at_low import (
     select_filllots_at_low_state_candidates,
 )
 

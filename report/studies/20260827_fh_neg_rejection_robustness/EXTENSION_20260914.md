@@ -95,9 +95,9 @@ latency 或真正的 fill simulator；同檔 D-1 深度/200 萬容量只約束 a
 ```bash
 UV_CACHE_DIR=/tmp/hft-uv-cache MPLCONFIGDIR=/tmp/matplotlib-hft \
 uv run --no-sync python \
-  src/research/timeSeries/test/20260827_fh_neg_rejection_robustness/extend_static_backtest.py \
+  src/research/intradaySignal/experiments/20260827_fh_neg_rejection_robustness/extend_static_backtest.py \
   --end 20260914 \
-  --output-dir src/research/timeSeries/test/20260827_fh_neg_rejection_robustness/artifacts/static_backtest_extension_20260914_v1
+  --output-dir src/research/intradaySignal/experiments/20260827_fh_neg_rejection_robustness/artifacts/static_backtest_extension_20260914_v1
 ```
 
 - [run manifest](../../../test/20260827_fh_neg_rejection_robustness/artifacts/static_backtest_extension_20260914_v1/run_manifest.json)

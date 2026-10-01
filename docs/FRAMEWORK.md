@@ -1,8 +1,9 @@
-# timeSeries 研究 framework 使用方式
+# intradaySignal 研究 framework 使用方式
 
-本文件只描述未來事件研究。已確定使用的正式點位由根目錄
-`build_index.py`／`data_loader.py` 維護；framework 不得寫入
-`data_index.parquet`、`data/`，也不得替正式入口產生 manifest。
+本文件只描述事件研究契約。正式 negFill 點位仍由
+`src/research/timeSeries/build_index.py`／`data_loader.py` 維護；framework
+不得寫入該目錄，也不得替它產生 manifest。本模組舊的同名入口已於 2026-09-21
+移除，將由多訊號 condition registry 與共用 daily store 取代。
 
 框架把一條研究線拆成可獨立版本化的六份契約：event、dataset、label、
 feature、model、threshold。事件名稱可以是 negFill、成交量突變、盤口失衡或
@@ -18,7 +19,7 @@ Selector 會收到單日所有 canonical source 的 lazy access，可依需要�
 from pathlib import Path
 import polars as pl
 
-from src.research.timeSeries.framework import (
+from src.research.intradaySignal.framework import (
     DataRoots,
     EventIndexSpec,
     build_event_index,
@@ -39,7 +40,7 @@ def select_my_event(day):
 
 roots = DataRoots.from_project_root(Path("."))
 artifact_root = Path(
-    "src/research/timeSeries/test/20260826_large_trade/"
+    "src/research/intradaySignal/experiments/20260826_large_trade/"
     "artifacts/large_trade/v1"
 )
 event_spec = EventIndexSpec(
@@ -62,7 +63,7 @@ tickBar 對齊，並記錄每個 partition 的 index/source identity。Universe 
 獨立的 `UniverseSpec`；callback 只能選列，不能竄改欄位值。
 
 ```python
-from src.research.timeSeries.framework import (
+from src.research.intradaySignal.framework import (
     EventDatasetSpec,
     MergeOptions,
     build_event_dataset,
@@ -95,7 +96,7 @@ build_event_dataset(dataset_spec, roots=roots)
 - `label_vol_bp`、`label_z`、`label_valid`
 
 ```python
-from src.research.timeSeries.framework.labels import (
+from src.research.intradaySignal.framework.labels import (
     Direction,
     DirectionalLabelSpec,
     EntrySpec,
@@ -178,8 +179,8 @@ null 後依日期排序的 active observations，不應寫成 calendar days。
 參考命令：
 
 ```bash
-uv run python src/research/timeSeries/condition_benchmark.py \
-  --event-index src/research/timeSeries/data_index.parquet \
+uv run python src/research/intradaySignal/tools/condition_benchmark.py \
+  --event-index src/research/intradaySignal/data_index.parquet \
   --label-profile short-taker-stop108-v1 \
   --start 20250211 --end 20260817 --step 3 --sample 25000
 ```
@@ -197,7 +198,7 @@ availability 都進 SHA-256 fingerprint；regex 或 dataframe schema discovery �
 用 manifest 固定 fallback；未來追加資料不能改寫歷史輸入。
 
 ```python
-from src.research.timeSeries.framework import (
+from src.research.intradaySignal.framework import (
     FeatureManifest,
     FeatureSpec,
     train_and_predict_causal_v2,
@@ -223,6 +224,13 @@ result = train_and_predict_causal_v2(
 `src/research/rolling_model.py` 的預設仍是 `legacy_v1`，讓舊 notebook 可重現；
 新研究應透過 wrapper 明確使用 `causal_v2`。
 
+Wrapper 預設 estimator 仍是 Ridge。若研究要做同一 rolling／feature contract 下的
+ElasticNet ablation，可顯式傳入 `model_family="elastic_net"`、`elastic_net_l1_ratio`
+與 `elastic_net_alpha_mode`。`ridge_l2_equivalent` 會依每次 fit 的樣本數換算 sklearn
+兩種 objective 的尺度，使 L2 係數對齊原 Ridge alpha，再增加 L1；這只是一個固定
+model-family 診斷，不是 alpha／l1-ratio 自動選型。模型 family 與 penalty 設定必須
+進 study manifest，不能用同名 artifact 覆寫 Ridge 結果。
+
 ## 6. Prior-only threshold
 
 正式契約建議使用 `calendar_sessions`：前 N 個全市場交易日內沒有該 bucket，也
@@ -230,7 +238,7 @@ result = train_and_predict_causal_v2(
 有該 bucket 的日子」語意。兩者不能混稱 prior-3-day。
 
 ```python
-from src.research.timeSeries.framework import (
+from src.research.intradaySignal.framework import (
     PriorQuantileSpec,
     WindowBasis,
     build_prior_session_thresholds,
@@ -260,11 +268,61 @@ observations、quantile、window basis 與 score unit。缺門檻時 gate 為 Fa
   feature manifest 與 merge factories；它不是正式入口的 runtime dependency。
 - 共用台股 universe 在 `profiles/tw_equity.py`；benchmark long 與 FHL maker
   labels 分別在 `profiles/benchmark.py`、`profiles/fhl.py`，不屬於 negFill。
-- 根目錄 `build_index.py` 直接維護固定事件的 `data_index.parquet`；根目錄
-  `data_loader.py` 直接維護 `data/YYYYMMDD.parquet`。兩者不得 import framework，
-  也不寫 manifest。
+- 本模組舊的根目錄入口（`build_index.py`、`data_loader.py`、`data/`、
+  `data_index.parquet`）已移除；正式 negFill 點位仍在
+  `src/research/timeSeries/`，重建完成前不得從本模組寫入。
 - 新版 reference merge 必須建立新的 `EventDatasetSpec`，並將 `index_path` 與
   `output_dir` 指向 study-local versioned artifact 目錄或 `/tmp`。
 - `baseline/timeseries_points.parquet` 是 frozen legacy artifact；修改框架、
   文件或測試都不得原地重建它。新的結果以新的 dataset/model/study version
   並存，先做 parity／差異歸因後才可宣告取代。
+
+## 8. 多訊號：SignalConfig 與四層
+
+`framework/registry.py` 放契約（每層一個 Spec + `SignalConfig`），`layers/` 放四層邏輯，
+`signals/<name>.py` 只宣告一個 `SignalConfig`，`config.py` 註冊。
+
+```python
+from src.research.intradaySignal.framework.registry import GateSpec, RollingSelection, SignalConfig
+from src.research.intradaySignal.signals._short_common import short_day_selector, short_model_spec, short_point_filter_spec
+
+CONDITION = GateSpec(
+    gate_id="my_condition", version="1",
+    params={"rank_max": 150},                # 預設值；不在 grid 裡的參數固定
+    grid={"rank_max": (100, 150, 200)},      # 要 rolling 的參數；空 dict = 固定
+    apply=my_condition_fn,                   # (pl.DataFrame, params) -> pl.Series[bool]
+    stage="condition",
+)
+MY_SIGNAL = SignalConfig(
+    st_name="my_signal", version="1", stage="research",
+    # 1 envelope + condition
+    envelope=my_envelope,                    # EventDaySources -> keys（可帶 envelope_columns）
+    envelope_required_sources=("tick_feature",),
+    envelope_columns=(),                     # envelope 算出、tickFeature 沒有、condition 要用的欄
+    universe=NEXTDAY_ALLOW_DAY_TRADE_UNIVERSE_V1,
+    gate=CONDITION,
+    selection=RollingSelection(window_days=60, objective="stockday_mean_label"),
+    selection_pool=my_label_fn,              # 候選 rows -> 帶 label 的 rows，只給選參評分
+    # 2 固定 tick 過濾（無 grid；None = 不過濾）
+    point_filter=short_point_filter_spec("my_points", md_l1rate_min=0.2),
+    # 3 學習型 stock-day gate（None = 不用）
+    day_selector=short_day_selector("my_day", exclude_share=0.35),
+    # 4 模型（None = 沒有模型層）
+    model=short_model_spec(),
+)
+```
+
+- `layers/envelope.py`：`build_envelope_index`／`build_store`（在 `framework/store.py`）→
+  `build_condition_params`（每個 store 日對 grid 全部格子算 per (Date, param_set, QuoteCode) 聚合並快取；
+  評分池先套 point filter；target day 的分數只用 strictly-prior `window_days` 個 store 日；保留全 grid
+  分數與 `is_winner`）→ `build_signal_index`（`params_for_date`：當日 → 最近一次 winner → 預設）。
+  `evaluate_rolling_selection` 是「每日微調有沒有價值」的判定器。
+- `layers/point_filter.py`：`build_points` 對 index 每日套 `point_filter.mask`，寫 keys；`load_rows`
+  是第 3、4 層共用的候選列讀法（store ∩ index ∩ points）。
+- `layers/day_selector.py`：`build_stock_day_table`（candidate rows → `spec.label` → 每 stock-day 的
+  D-1 特徵與 target 均值）→ `build_day_scores`（strictly-prior 視窗重訓、依 `exclude_share` 切、
+  `hard_rules.mask` 永遠擋）→ `apply_day_scores_pl/pd`。
+- `layers/model.py`：`build_signal_frame`（long format，`signal_id`；列已過 day selector）→
+  `train_by_signal`、`threshold_by_signal`、`select_by_signal`；模型引擎仍是
+  `src/research/rolling_model.train_and_predict_ridge_rolling`。
+- 每個產物有 manifest 記定義 hash；定義變了自動重建，上游變了下游跟著重做。

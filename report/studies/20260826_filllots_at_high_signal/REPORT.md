@@ -175,7 +175,7 @@ static-only；selection-only 也優於 timing-only。不能把 selected curve �
 
 ## negFill overlap 與獨立性
 
-Reference 是 read-only 的廣義 `src/research/timeSeries/data_index.parquet` event index，
+Reference 是 read-only 的廣義 `src/research/intradaySignal/data_index.parquet` event index，
 不是正式 negFill 最終成交 signals；本節只能回答事件域重疊，不能直接等同 portfolio
 correlation。
 
@@ -261,23 +261,23 @@ study-local artifacts，不觸碰 production index。
 
 ```bash
 UV_CACHE_DIR=/tmp/hft_uv_cache uv run python \
-  src/research/timeSeries/test/20260826_filllots_at_high_signal/build_dataset.py \
+  src/research/intradaySignal/experiments/20260826_filllots_at_high_signal/build_dataset.py \
   --stage all --force
 
 UV_CACHE_DIR=/tmp/hft_uv_cache uv run python \
-  src/research/timeSeries/test/20260826_filllots_at_high_signal/audit_sampling.py
+  src/research/intradaySignal/experiments/20260826_filllots_at_high_signal/audit_sampling.py
 
 UV_CACHE_DIR=/tmp/hft_uv_cache MPLCONFIGDIR=/tmp/hft_mpl_config uv run python \
-  src/research/timeSeries/test/20260826_filllots_at_high_signal/run_model_backtest.py \
+  src/research/intradaySignal/experiments/20260826_filllots_at_high_signal/run_model_backtest.py \
   --n-jobs 8 --force-input --force-model --force-thresholds
 
 UV_CACHE_DIR=/tmp/hft_uv_cache uv run python \
-  src/research/timeSeries/test/20260826_filllots_at_high_signal/audit_negfill_overlap.py
+  src/research/intradaySignal/experiments/20260826_filllots_at_high_signal/audit_negfill_overlap.py
 
 UV_CACHE_DIR=/tmp/hft_uv_cache MPLCONFIGDIR=/tmp/hft_mpl_config uv run python \
-  src/research/timeSeries/test/20260826_filllots_at_high_signal/run_model_backtest.py \
+  src/research/intradaySignal/experiments/20260826_filllots_at_high_signal/run_model_backtest.py \
   --n-jobs 8 --manifest-only
 
 UV_CACHE_DIR=/tmp/hft_uv_cache uv run python \
-  src/research/timeSeries/test/20260826_filllots_at_high_signal/verify_run.py
+  src/research/intradaySignal/experiments/20260826_filllots_at_high_signal/verify_run.py
 ```

@@ -1,8 +1,8 @@
 # 2026-08-19～21 legacy experiment table
 
-> Status: archived supplement。這是原 `test/README.md` 的完整歷史表，保留當時數字與
+> Status: archived supplement。這是原 `experiments/README.md` 的完整歷史表，保留當時數字與
 > 判定；完整且現行的 study-code 索引請看
-> [test/README.md](../../../test/README.md)，研究報告入口請看
+> [experiments/README.md](../../../test/README.md)，研究報告入口請看
 > [report/README.md](../../README.md)。
 
 慣例：任何 condition / 門檻 / 模型變體，以 `baseline/`（確定採用的點位與凍結配置）為對照，
@@ -26,7 +26,7 @@
 | 層 | 位置 | 進版控 | 內容 |
 |---|---|---|---|
 | 結論 | `report/studies/20260819_20260821_legacy_digest/` | ✓ | 當時原則、及格線、每個實驗的判定 |
-| 方法 | `test/<日期>_<主題>/*.py` | ✓ | 實驗腳本（docstring 即文件），可重現 |
+| 方法 | `experiments/<日期>_<主題>/*.py` | ✓ | 實驗腳本（docstring 即文件），可重現 |
 | 點位 | `baseline/*.parquet` | ✓（gitignore 例外） | 確定採用的成交點 |
 | cache | session scratchpad（/tmp） | ✗ | preds parquet、pkl、log——可由腳本重生，session 結束自動消失 |
 

@@ -4,7 +4,7 @@ import unittest
 
 import polars as pl
 
-from src.research.timeSeries.framework.condition_study import (
+from src.research.intradaySignal.framework.condition_study import (
     ConditionComparisonSpec,
     ConditionStudyContractError,
     PrimaryEstimand,

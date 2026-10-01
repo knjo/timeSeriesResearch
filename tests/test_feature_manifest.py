@@ -5,10 +5,10 @@ import subprocess
 import sys
 import unittest
 
-import src.research.timeSeries.framework as framework
-import src.research.timeSeries.framework.profiles.negfill as negfill_profile
-from src.research.timeSeries.framework.features import FeatureManifest, FeatureSpec
-from src.research.timeSeries.framework.profiles.negfill import NEGFILL_V1
+import src.research.intradaySignal.framework as framework
+import src.research.intradaySignal.framework.profiles.negfill as negfill_profile
+from src.research.intradaySignal.framework.features import FeatureManifest, FeatureSpec
+from src.research.intradaySignal.framework.profiles.negfill import NEGFILL_V1
 
 
 class FeatureManifestTest(unittest.TestCase):
@@ -17,7 +17,7 @@ class FeatureManifestTest(unittest.TestCase):
             [
                 sys.executable,
                 "-c",
-                "import sys; import src.research.timeSeries.framework; "
+                "import sys; import src.research.intradaySignal.framework; "
                 "print('src.research.rolling_model' in sys.modules)",
             ],
             cwd=Path(__file__).resolve().parents[4],

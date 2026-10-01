@@ -16,7 +16,7 @@ import polars as pl
 
 RUNNER_PATH = (
     Path(__file__).resolve().parents[1]
-    / "test"
+    / "experiments"
     / "20260825_filllots_at_low_framework"
     / "run_sweep.py"
 )

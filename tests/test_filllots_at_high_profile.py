@@ -6,8 +6,8 @@ from pathlib import Path
 
 import polars as pl
 
-from src.research.timeSeries.framework.events import DataRoots, EventDaySources
-from src.research.timeSeries.framework.profiles.filllots_at_high import (
+from src.research.intradaySignal.framework.events import DataRoots, EventDaySources
+from src.research.intradaySignal.framework.profiles.filllots_at_high import (
     CANDIDATE_DESCRIPTIONS,
     CANDIDATE_IDS,
     FILLLOTS_AT_HIGH_FEATURE_FAMILY_VERSION,
