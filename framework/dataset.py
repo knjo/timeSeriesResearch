@@ -366,8 +366,11 @@ def _attach_tick_bar(
             tick_bar.rename({"TransTime": "tick_bar_source_time"})
             .with_columns(
                 (
-                    pl.lit(datetime.strptime(date, "%Y%m%d").date())
-                    .dt.combine(pl.col("TimeSlot"))
+                    pl.max_horizontal(
+                        pl.lit(datetime.strptime(date, "%Y%m%d").date())
+                        .dt.combine(pl.col("TimeSlot")),
+                        pl.col("tick_bar_source_time"),
+                    )
                     + pl.duration(microseconds=1)
                 ).alias("_tick_bar_available_at")
             )

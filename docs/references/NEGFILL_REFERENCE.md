@@ -64,14 +64,20 @@ bid-ask bounce 約 1 點、不到 1 bp。
 是否大於 `100000` 自動判斷；QuoteCode 沿用 TAIFEX 月碼
 `TXF + 月字母(A=1..L=12) + 年末碼`，例如 `202506` → `TXFF5`。
 
-preMarketData 每檔商品只加入 `txf_beta_60d` 與
-`txf_residual_vol_0900_1330_60d`。兩者使用最近 60 個已完成交易日的
+preMarketData 每檔商品加入 `txf_beta_60d` 與
+`txf_residual_vol_0900_1330_60d`（另有 `txf_corr_60d`、
+`txf_residual_vol_0900_1330_40d`／`_20d`，見下段）。兩者使用最近 60 個已完成交易日的
 股票 open-to-close 與 TXF 09:00-to-13:30 return，至少 20 筆；beta
 向 1.0 shrink 後限制在 `[-0.5, 2.0]`，residual vol 則是使用同一個
 applied beta 計算的 residual return 標準差。資料不足時 beta 使用 1.0、
 vol 保持 null，不另外輸出 fallback 或 audit 欄位。因此
 `txf_beta_60d == 1.0` 實務上就等於 fallback（shrink 後剛好落在 1.0
 的機率是零），`vol` 為 null 也是同一件事的另一個指標。
+
+`txf_residual_vol_0900_1330_40d`／`_20d` 用同一個 60 日 applied beta 的
+residual，只把標準差窗口縮成 lookback 日曆的最後 40／20 天，覆蓋門檻
+維持 1/3（14／7 筆）。60 日 beta 缺值時兩者也是 null。事件層的
+`txf_residual_vol_to_1330` 仍只縮放 60 日 vol。
 
 #### 鎖死的個股日不進 beta 歷史
 
@@ -908,7 +914,7 @@ passModels = passModelA AND passModelM
 |---|---|---|
 | `metadata.trained_until` | 否 | 確認參數使用到哪一天的訓練資料，避免載入過期或未來參數。 |
 | `metadata.alpha` | 否 | Ridge 訓練時的正則化強度，只是模型追蹤資訊。 |
-| `metadata.otc_turnover_threshold` | 否 | 建立 OTC 盤前目標清單時使用的歷史排名門檻；不直接放進逐筆分數。 |
+| `metadata.otc_turnover_threshold` | 否 | 自 2026-09-21 起固定為 `null`：OTC turnover 目標清單與 `TradeRecord.csv` 機制已自 `modelUpdate.py` 移除（`target_list` 自 7/27 起即固定為空）；欄位保留以維持 schema。 |
 | `suspended_list` | 否 | <span style="color:#6a1b9a;font-weight:700">[MODEL]</span> 當日不可交易清單，於 Gate 最前面排除。它雖由盤前特徵產生，但盤中直接來源是模型檔。 |
 | `target_list` | 否 | <span style="color:#6a1b9a;font-weight:700">[MODEL]</span> 可選的額外目標商品清單；目前程式固定輸出空陣列，代表未啟用。 |
 

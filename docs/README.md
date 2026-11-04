@@ -10,4 +10,4 @@
 正式 `data_index.parquet` 或 `data/`。
 
 帶日期的實證數字與研究判定不屬於 `docs/`；請從
-[report index](../report/README.md) 進入。
+[report index](../Doc/README.md) 進入。

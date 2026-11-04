@@ -90,6 +90,30 @@ def _index_rows() -> pl.DataFrame:
 
 
 class FrameworkDatasetTest(unittest.TestCase):
+    def test_delayed_closing_bar_waits_for_source_availability(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            roots = _roots(Path(tmp))
+            _write_minimal_sources(roots)
+            tick_path = roots.tick_data_dir / f"{DATE}_StockTick.parquet"
+            pl.read_parquet(tick_path).with_columns(
+                pl.lit(datetime(2024, 1, 2, 13, 31)).alias("TransTime")
+            ).write_parquet(tick_path)
+            pl.DataFrame({
+                "QuoteCode": ["2330", "2330"],
+                "TimeSlot": [time(13, 25), time(13, 30)],
+                "TransTime": [datetime(2024, 1, 2, 13, 25), datetime(2024, 1, 2, 13, 33)],
+                "AmountRank": [10, 1],
+            }).write_parquet(roots.tick_bar_dir / f"{DATE}_tickBar.parquet")
+            for minute, expected in [(31, 10), (34, 1)]:
+                pl.read_parquet(tick_path).with_columns(
+                    pl.lit(datetime(2024, 1, 2, 13, minute)).alias("TransTime")
+                ).write_parquet(tick_path)
+                result = materialize_event_day(
+                    DATE, _index_rows(), roots=roots,
+                    options=MergeOptions(attach_txf=False),
+                )
+                self.assertEqual(result.frame["AmountRank"][0], expected)
+
     def test_source_order_policy_preserves_legacy_tick_schema(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             roots = _roots(Path(tmp))

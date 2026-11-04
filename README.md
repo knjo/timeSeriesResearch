@@ -48,8 +48,8 @@ index 或 daily 目錄。`src/research/negFill` 只供查看既有外層管線�
 資料契約、研究歷史與執行規格已獨立到
 [NEGFILL_REFERENCE.md](docs/references/NEGFILL_REFERENCE.md)。
 
-研究數字與判定不放在入口文件；由 [report index](report/README.md) 進入對應的
-versioned study report。`test/` 保存可重現的研究程式，`report/studies/` 保存結論，
+研究數字與判定不放在入口文件；由 [report index](Doc/README.md) 進入對應的
+versioned study report。`test/` 保存可重現的研究程式，`Doc/studies/` 保存結論，
 兩者以相同的日期主題 id 配對。
 
 ## 核心資料流

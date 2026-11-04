@@ -61,6 +61,10 @@ Generic merge 預設保留全部事件列、要求必要來源、使用 complete
 tickBar 對齊，並記錄每個 partition 的 index/source identity。Universe 是
 獨立的 `UniverseSpec`；callback 只能選列，不能竄改欄位值。
 
+tickBar v2 的 `TransTime` 是整根 K 與橫斷面排名的可用時間。預設對齊取
+`max(當日 TimeSlot, TransTime) + 1μs`，因此最後一根若含延後收盤撮合，
+需等撮合完成才可讀取；舊版快照仍受完成 `TimeSlot` 的限制。
+
 ```python
 from src.research.timeSeries.framework import (
     EventDatasetSpec,
@@ -222,6 +226,13 @@ result = train_and_predict_causal_v2(
 
 `src/research/rolling_model.py` 的預設仍是 `legacy_v1`，讓舊 notebook 可重現；
 新研究應透過 wrapper 明確使用 `causal_v2`。
+
+Wrapper 預設 estimator 仍是 Ridge。若研究要做同一 rolling／feature contract 下的
+ElasticNet ablation，可顯式傳入 `model_family="elastic_net"`、`elastic_net_l1_ratio`
+與 `elastic_net_alpha_mode`。`ridge_l2_equivalent` 會依每次 fit 的樣本數換算 sklearn
+兩種 objective 的尺度，使 L2 係數對齊原 Ridge alpha，再增加 L1；這只是一個固定
+model-family 診斷，不是 alpha／l1-ratio 自動選型。模型 family 與 penalty 設定必須
+進 study manifest，不能用同名 artifact 覆寫 Ridge 結果。
 
 ## 6. Prior-only threshold
 

@@ -146,6 +146,7 @@ class DeployedPipelineTest(unittest.TestCase):
                 "preMarket",
                 "tickBar",
                 "txfTickData",
+                "brenchFeature",
             )
             paths = deployed_loader.DeploymentDataPaths(
                 *(root / name for name in source_names)
